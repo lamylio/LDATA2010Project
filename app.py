@@ -9,8 +9,10 @@ server = app.server
 
 import pandas as pd
 data = pd.read_table(
-    "data\INTERACTIONS.tab3.txt", 
+    "data/INTERACTIONS.tab3.txt", 
     na_values=["-", "-|-", "-|-|-", "-|-|-|-", "-|-|-|-|-"], 
     low_memory=False
 )
 data.columns = data.columns.str.strip("#").str.upper().str.replace(" ", "_")
+data = data.head(50)
+data.dropna(thresh=len(data.index)/2, axis=1, inplace=True)

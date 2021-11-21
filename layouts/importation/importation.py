@@ -1,9 +1,9 @@
 import dash.html as html
-from dash_bootstrap_components import Alert, Container
+import dash_bootstrap_components as dbc
 
-layout = Container(
+layout = html.Div(
     [    
-        Alert(
+        dbc.Alert(
             html.H1("Importation page! To be made.", style={"text-align": "center"}),
             is_open=True, style={"margin-top": "5em"}, color="danger"
         )

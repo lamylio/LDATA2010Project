@@ -16,7 +16,8 @@ app.layout = Container(
     class_name="h-100 w-100 p-0 m-0 g-0",
 )
 
-# %% Run if asked
-if __name__ == "__main__":
-    app.enable_dev_tools(True)
-    app.run_server(debug=True)
+# %% Run the server
+# In order to start the server, go to "Debugger" and/or click "Run"
+# Or type "python3 main.py" in the console
+# View the result : https://replit.llamy.be
+app.run_server(host='0.0.0.0', dev_tools_hot_reload=True, dev_tools_hot_reload_interval=10)
