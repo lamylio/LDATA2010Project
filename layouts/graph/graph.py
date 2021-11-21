@@ -1,11 +1,17 @@
 import dash.html as html
-from dash_bootstrap_components import Alert, Container
+import dash_bootstrap_components as dbc
 
-layout = Container(
+from layouts.graph.elements import left_col, center_col, right_col
+
+layout = html.Div(
     [    
-        Alert(
-            html.H1("Graph page! To be made.", style={"text-align": "center"}),
-            is_open=True, style={"margin-top": "5em"}
-        )
-    ]
+        dbc.Row(
+            [
+                left_col.layout,
+                center_col.layout,
+                right_col.layout
+            ],
+        class_name="h-100", align="center")
+    ],
+    className="h-100"
 )

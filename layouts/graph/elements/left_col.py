@@ -1,5 +1,8 @@
-from dash.html import Div, H2
+import dash_bootstrap_components as dbc
 
-layout = Div([
-    H2("Left column")
-])
+layout = dbc.Col(
+    [
+
+    ],
+    width=12, md=3, class_name="border h-100"
+)

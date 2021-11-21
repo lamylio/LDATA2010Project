@@ -1,16 +1,25 @@
 import dash_bootstrap_components as dbc
-from dash import dcc
-from dash.html import Div
+from dash import dcc, html
 
-layout = Div([
-    dcc.Location("url"),
-    dbc.NavbarSimple(
-        [
-            dbc.NavLink("Dataset", href="/import", active="exact"),
-            dbc.NavLink("Graphic", href="/graph", active="exact"),
-            dbc.NavLink("Table", href="/table", active="exact")
-        ],  
-        brand="Graph visualization app",
-        color="light"
-    )
-])
+layout = html.Div(
+    [
+        dcc.Location("url"),
+        dbc.Navbar(
+            dbc.Nav(
+                [
+                    dbc.NavLink("Dataset", className="h4", href="/import", active="partial"),
+
+                    dbc.NavLink("Graphic", className="h4", href="/graph", active="partial"),
+
+                    dbc.NavLink("Table", className="h4", href="/table", active="partial")
+                
+                ],
+                justified="center",
+                horizontal="center",
+                navbar=True,
+                class_name="d-flex justify-content-around w-100"
+            ),
+        style={"border-bottom": "5px solid var(--dark)"}
+        )
+    ]
+)
