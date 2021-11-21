@@ -5,3 +5,4 @@ networkx
 netwulf
 plotly
 spacy
+dash-bootstrap-components
