@@ -1,18 +1,11 @@
 from dash import Dash
-from dash_bootstrap_components.themes import LITERA
+from dash_bootstrap_components.themes import LITERA, BOOTSTRAP
+from dash.dcc import Store
 
 # %% Create the app
-app = Dash(__name__, external_stylesheets=[LITERA])
+app = Dash(__name__, external_stylesheets=[BOOTSTRAP, LITERA])
 server = app.server
 
-# %% Variable storing. NOTE: data defined as such is temporary
-
-import pandas as pd
-data = pd.read_table(
-    "data/INTERACTIONS.tab3.txt", 
-    na_values=["-", "-|-", "-|-|-", "-|-|-|-", "-|-|-|-|-"], 
-    low_memory=False
-)
-data.columns = data.columns.str.strip("#").str.upper().str.replace(" ", "_")
-data = data.head(50)
-data.dropna(thresh=len(data.index)/2, axis=1, inplace=True)
+# %% Variable storing
+store_data = "store_local_data"
+store_graph = "store_local_graph"

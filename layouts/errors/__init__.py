@@ -1,1 +1,0 @@
-from layouts.errors.not_found import layout as not_found
