@@ -1,8 +1,5 @@
+numpy
 pandas
 dash
-jupyter-dash
-networkx
-netwulf
-plotly
-spacy
 dash-bootstrap-components
+visdcc
