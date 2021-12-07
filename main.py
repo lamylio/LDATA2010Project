@@ -1,9 +1,9 @@
 from uuid import uuid4
 # %% Import the application and callbacks
-from app import app, store_id, store_graph, alert
+from app import *
 
 # %% Setup the layouts
-from dash_bootstrap_components import Container, Alert
+from dash_bootstrap_components import Container
 from dash.dcc import Store
 from layouts import layout
 
@@ -12,8 +12,8 @@ def serve_layout():
     return Container(
     [
         Store(data=session_id, id=store_id, storage_type="local"),
+        Store(id=store_settings, storage_type='local'),
         Store(id=store_graph, storage_type='local'), 
-        Alert([], id=alert, is_open=False, duration=5000, style={"position": "fixed", "top": 10, "right": 10, "zIndex": 9999}, color="danger", class_name="mx-auto text-center h2"),
         layout
     ],
     fluid=True,
@@ -27,4 +27,4 @@ def serve_layout():
 # View the result : https://replit.llamy.be
 
 app.layout = serve_layout
-app.run_server(port=80, debug=False)
+app.run_server(port=80, debug=True, dev_tools_hot_reload=False)

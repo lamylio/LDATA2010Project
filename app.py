@@ -18,21 +18,8 @@ server = app.server
 store_id = "session_id"
 store_data = "store_local_dataset"
 store_graph = "store_local_graph"
+store_settings = "store_local_settings"
+
 alert = "alert"
 
-dataset_name = "@DATASET_NAME"
-
-# %% Data storage
-
-storage = {}
-
-def get_dataframe(session_id):
-    from pandas import DataFrame
-    d = storage.get(session_id, {}).copy()
-    del d[dataset_name]
-    return DataFrame.from_dict(d)
-
-def save_dataframe(session_id, dataframe, df_name=None):    
-    if session_id in storage and not df_name: df_name = storage[session_id][dataset_name]
-    storage[session_id] = dataframe.to_dict(orient="list")
-    storage[session_id][dataset_name] = df_name
+col_dataset_name = "@DATASET_NAME"

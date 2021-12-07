@@ -14,6 +14,6 @@ layout = html.Div([
 ])
 
 
-@app.callback(Output("offcanvas-dataset", "is_open"), Input("btn-dataset", "n_clicks"))
+@app.callback(Output("offcanvas_dataset", "is_open"), Input("btn-dataset", "n_clicks"))
 def toggle_offcanvas_dataset(click):
     return click is not None
