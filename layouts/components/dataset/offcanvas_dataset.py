@@ -1,10 +1,11 @@
 from layouts.requirements import dbc, html, dcc
 from layouts.components.dataset.import_zone import layout as import_zone
+from dash.dcc import Store
 
 layout = dbc.Offcanvas(
 
     [
-        html.H4(id="data_name"),
+        html.H4(id="data_name", className="text-break"),
         html.Br(),
         import_zone,
 
@@ -24,12 +25,17 @@ layout = dbc.Offcanvas(
             dbc.InputGroupText("NA values"),
             dbc.Input(id="nas", type="text", value="-, -|-, -|-|-, -|-|-|-, -|-|-|-|-")
         ]),
-
         html.Br(),
-        html.H4("Columns to keep"),
-        dcc.Dropdown(id="columns", multi=True, options=[]),
+        dbc.Button("Load", id="import_dataset", class_name="d-block mx-auto text-center", size="md"),
         html.Br(),
-        dbc.Button("Validate (not working, yet)", id="validate", class_name="mx-auto text-center", size="md")
+        html.Div([
+            html.H4("Columns to remove"),
+            dcc.Dropdown(id="columns", multi=True, options=[]),
+            html.Br(),
+            dbc.Button("Validate", id="validate_dataset", class_name="d-block mx-auto text-center", size="md")
+        ], id="div_columns", style={"display": "none"}),
+        Store(data=False, id="is_data_loaded"),
+        Store(data=False, id="are_columns_picked")
     ],
         
     id="offcanvas-dataset",
