@@ -8,9 +8,9 @@ from layouts.requirements import html
 import visdcc
 
 graph_options = {
-    "height": "1000px",
+    "height": "1500px",
     "width": "100%",
-    "configure" : {},
+    "configure" : {"enabled": False},
     "nodes": {"color": "black"},
     "edges": {},
     "layout": {"improvedLayout": False},
@@ -36,7 +36,7 @@ def update_graph(edges_graph, nodes_graph, store_graph, graph):
     ctx = callback_context
     if not ctx.triggered: return (store_graph, store_graph)
     else: 
-        graph_data = store_graph
+        graph_data = store_graph or {}
         input = ctx.triggered[0]['prop_id'].split('.')[0]
         if input == "edges_graph": graph_data["edges"] = edges_graph
         elif input == "nodes_graph": graph_data["nodes"] = nodes_graph

@@ -7,8 +7,10 @@ from layouts import components
 
 layout = html.Div([
     components.graph,
+    dbc.Offcanvas([
+        dbc.Button("Data importation", id="btn-dataset", color="dark", class_name="mx-autorounded-0", style={"opacity": 0.8}, size="lg"),
 
-    dbc.Button("Dataset", id="btn-dataset", color="dark", class_name="col-2 mx-auto position-absolute rounded-0", style={"top": "5vh", "right": "5vw", "opacity": 0.8}, size="lg"),
+    ],id="configurator", backdrop=False, is_open=True),
     
     components.offcanvas_dataset
 ])

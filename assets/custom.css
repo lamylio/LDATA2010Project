@@ -3,4 +3,9 @@ html, body, #_dash-app-content{
     width: 100vw;
     margin: 0;
     padding: 0;
+    overflow: hidden;
+}
+
+#configurator .btn-close{
+    display: none;
 }

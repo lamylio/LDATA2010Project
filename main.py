@@ -27,4 +27,4 @@ def serve_layout():
 # View the result : https://replit.llamy.be
 
 app.layout = serve_layout
-app.run_server(port=80, debug=True, dev_tools_hot_reload=False)
+app.run_server(port=80, debug=False, dev_tools_hot_reload=False)

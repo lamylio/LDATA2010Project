@@ -44,7 +44,7 @@ def load_and_save(session_id, type, content, filename, separator, nas):
 def show_selected_or_loaded_filenames(session_id, name_nodes, name_edges, is_open):
     if not is_open: raise PreventUpdate
 
-    nn = name_nodes or get_dataframe_name(session_id, "nodes") # or "Please select nodes file."
+    nn = name_nodes or get_dataframe_name(session_id, "nodes") or "Please select nodes file."
     ne = name_edges or  get_dataframe_name(session_id, "edges") or "Please select edges file."
     un = name_nodes or up_default
     ue = name_edges or up_default
