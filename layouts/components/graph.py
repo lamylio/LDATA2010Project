@@ -29,11 +29,11 @@ layout = html.Div(
     Output(store_graph, "data"),
     Input("edges_graph", "data"),
     Input("nodes_graph", "data"),
-    Input(store_graph, "data"),
-    State("graph", "data"),
+    Input(store_graph, "data")
 )
-def update_graph(edges_graph, nodes_graph, store_graph, graph):
+def update_graph(edges_graph, nodes_graph, store_graph):
     ctx = callback_context
+    print("DEBUG: graph update")
     if not ctx.triggered: return (store_graph, store_graph)
     else: 
         graph_data = store_graph or {}

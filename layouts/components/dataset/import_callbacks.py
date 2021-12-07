@@ -126,7 +126,7 @@ def add_options_edges_selection(session_id, edges_loaded):
 def create_nodes(column_nodes_id, column_nodes_label, session_id):
     if not column_nodes_id or not column_nodes_label: raise PreventUpdate
     df = get_dataframe(session_id, "nodes")
-    nodes = [{"id": id, "label": str(label)} for _, id, label in df[[column_nodes_id, column_nodes_label]].itertuples()]
+    nodes = [{"id": id, "label": str(label)} for id, label in set(zip(df[column_nodes_id], df[column_nodes_label]))]
     return nodes
 
 @app.callback(
@@ -138,7 +138,7 @@ def create_nodes(column_nodes_id, column_nodes_label, session_id):
 def create_edges(column_edges_from, column_edges_to,  session_id):
     if not column_edges_from or not column_edges_to: raise PreventUpdate
     df = get_dataframe(session_id, "edges")
-    edges = [{"id": f"{n_from}-{n_to}", "from": n_from, "to": n_to} for _, n_from, n_to in df[[column_edges_from, column_edges_to]].itertuples()]
+    edges = [{"id": f"{n_from}-{n_to}", "from": n_from, "to": n_to} for n_from, n_to in set(zip(df[column_edges_from], df[column_edges_to]))]
     return edges
 
 
