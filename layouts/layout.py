@@ -17,11 +17,11 @@ layout = html.Div([
     dcc.Dropdown(
         id = 'first-dropdown',
         options=[
-            {'label': 'New York City', 'value': 'NYC'},
-            {'label': 'Montreal', 'value': 'MTL'},
-            {'label': 'San Francisco', 'value': 'SF'}
+            {'label': 'Ex1', 'value': ''},
+            {'label': 'Ex2', 'value': ''},
+            {'label': 'Ex3', 'value': ''}
         ],
-        value=['MTL', 'NYC'],
+        value=['', ''],
         multi=True
     )
 ])
@@ -31,11 +31,11 @@ layout = html.Div([
     dcc.Dropdown(
         id = 'second-dropdown',
         options=[
-            {'label': 'New York City', 'value': 'NYC'},
-            {'label': 'Montreal', 'value': 'MTL'},
-            {'label': 'San Francisco', 'value': 'SF'}
+            {'label': 'Ex1', 'value': ''},
+            {'label': 'Ex2', 'value': ''},
+            {'label': 'Ex3', 'value': ''}
         ],
-        value=['MTL', 'NYC'],
+        value=[''],
         multi=True
     )
 ])
@@ -46,11 +46,11 @@ layout = html.Div([
     dcc.Dropdown(
         id = 'third-dropdown',
         options=[
-            {'label': 'New York City', 'value': 'NYC'},
-            {'label': 'Montreal', 'value': 'MTL'},
-            {'label': 'San Francisco', 'value': 'SF'}
+            {'label': 'Ex1', 'value': ''},
+            {'label': 'Ex2', 'value': ''},
+            {'label': 'Ex3', 'value': ''}
         ],
-        value=['MTL', 'NYC'],
+        value=[''],
         multi=True
     )
 ])
