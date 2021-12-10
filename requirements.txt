@@ -2,4 +2,5 @@ numpy
 pandas
 dash
 dash-bootstrap-components
-visdcc
+pyvis
+networkx
