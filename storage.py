@@ -1,31 +1,42 @@
-from app import col_dataset_name
+from app import dataframes, options, graphs
 from pandas import DataFrame
+from networkx import Graph
 
-# %% Data storage
-
-# {session_id: {nodes: {col : val}, edges: {col: val}}}
-storage = {}
-
-def blank_storage(session_id):
-    if session_id not in storage: storage[session_id] = {"edges": {}, "nodes": {}}
-
+# %% Data dataframes
 def dataframe_exists(session_id, type):
-    assert type in ["nodes", "edges"]
-    return storage.get(session_id, {}).get(type, False) != False
+    return not dataframes.get(session_id, {}).get(type, {}).get("df", DataFrame()).empty
 
 def get_dataframe(session_id, type):
-    assert type in ["nodes", "edges"]
-    d = storage.get(session_id, {}).get(type, {}).copy() 
-    if col_dataset_name in d : del d[col_dataset_name]
-    return DataFrame.from_dict(d)
+    return dataframes.get(session_id, {}).get(type, {}).get("df", DataFrame()).copy() 
 
 def get_dataframe_name(session_id, type):
-    assert type in ["nodes", "edges"]
-    return storage.get(session_id, {}).get(type, {}).get(col_dataset_name, None)
+    return dataframes.get(session_id, {}).get(type, {}).get("name", None)
 
 def save_dataframe(session_id, dataframe, type, df_name=None):
     assert type in ["nodes", "edges"]
-    if session_id not in storage: storage[session_id] = {"edges": {}, "nodes": {}}
-    if session_id in storage and not df_name: df_name = storage.get(session_id, {}).get(type, {}).get(col_dataset_name, "Unknown name")
-    storage[session_id][type] = dataframe.to_dict(orient="list")
-    storage[session_id][type][col_dataset_name] = df_name
+    if session_id not in dataframes: dataframes[session_id] = {"edges": {}, "nodes": {}}
+    if session_id in dataframes and not df_name: df_name = dataframes.get(session_id, {}).get(type, {}).get("name", None)
+    dataframes[session_id][type]["df"] = dataframe
+    dataframes[session_id][type]["name"] = df_name
+
+
+
+def settings_exists(session_id):
+    return options.get(session_id, False) != False
+
+def save_settings(session_id, settings):
+    options[session_id] = settings
+
+def get_settings(session_id):
+    return options.get(session_id, {})
+
+
+
+def graph_exists(session_id):
+    return graphs.get(session_id, False) != False
+
+def save_graph(session_id, graph):
+    graphs[session_id] = graph
+
+def get_graph(session_id):
+    return graphs.get(session_id, Graph())

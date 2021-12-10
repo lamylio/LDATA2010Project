@@ -131,4 +131,5 @@ dmypy.json
 
 /pdf
 /cache
+/networks
 *test*

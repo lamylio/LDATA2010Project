@@ -9,3 +9,7 @@ html, body, #_dash-app-content{
 #configurator .btn-close{
     display: none;
 }
+
+.accordion-body{
+    padding: 0.5em !important;
+}
