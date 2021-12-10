@@ -14,9 +14,9 @@ def load_and_save(session_id, type, content, filename, separator, nas):
     df = parse_file_contents(content, filename, separator, nas_val)
     if not df.empty: save_dataframe(session_id, df, type, filename)
     ex = dataframe_exists(session_id, type)
-    if app.server.debug: print("load_and_save > ", type, " >", session_id, " > ", ex)
+    if app.server.debug: print("load_and_save >", type, ">", session_id, ">", ex)
     return ex
-    
+
 # ==========================================
 
 # Show name of data uploaded

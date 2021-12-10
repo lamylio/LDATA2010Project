@@ -130,6 +130,6 @@ dmypy.json
 
 
 /pdf
-/cache
-/networks
+/cache/*
+/networks/*
 *test*

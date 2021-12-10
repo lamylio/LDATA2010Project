@@ -33,7 +33,7 @@ def serve_layout():
 # View the result : https://replit.llamy.be
 
 cached = glob("cache/*")
-networks = glob("networks/*")
+networks = glob("networks/*.html")
 for f in cached: remove(f)
 for f in networks: remove(f)
 
