@@ -12,7 +12,7 @@ def parse_file_contents(contents, filename, separator, nas):
     else :
         return None
 
-    df.columns = df.columns.str.strip("#").str.upper().str.replace(" ", "_")
+    df.columns = df.columns.str.strip("#").str.strip("@").str.upper().str.replace(" ", "_")
     return df
 
 # def create_nodes(column_nodes_id, column_nodes_label, session_id):

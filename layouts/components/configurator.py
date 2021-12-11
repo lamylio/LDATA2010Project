@@ -1,12 +1,14 @@
 from requirements import html, dbc, dcc
 
 layout = dbc.Card([
+
+    dbc.Spinner(id="loading_configurator", type="grow", fullscreen=True, fullscreen_style={"opacity": "0.5"}),
     dbc.CardHeader(html.H4("LDATA2010 - Graph visualisation")),
 
     dbc.CardBody([
 
         dbc.Button("Data importation", id="btn-dataset", color="dark", class_name="d-grid col-6 mx-auto mb-3", style={"opacity": 0.8}, outline=False),
-        
+        dbc.Alert(["Error while rendering the graph.", html.Br(), "Please check your options."], id="alert_configurator", is_open=False, duration=10000, color="danger", class_name="mx-auto text-center h2"),
         dbc.Accordion([
             dbc.AccordionItem([
                 dbc.InputGroup([
@@ -17,6 +19,11 @@ layout = dbc.Card([
                     dbc.InputGroupText("LABEL"),
                     dbc.Select(id="select_column_nodes_label", placeholder="Please import first")
                 ], id="input_column_nodes_label", class_name="p-0 m-0"),
+
+                dbc.InputGroup([
+                    dbc.InputGroupText("SIZE"),
+                    dbc.Select(id="select_column_nodes_size", placeholder="Please import first")
+                ], id="input_column_nodes_size", class_name="p-0 m-0"),
                 
                 html.Br(),
 

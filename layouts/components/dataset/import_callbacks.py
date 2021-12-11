@@ -11,11 +11,20 @@ up_default = html.Div([
 def load_and_save(session_id, type, content, filename, separator, nas):
     nas_val = nas.split(",")
     if content is None : return False
-    df = parse_file_contents(content, filename, separator, nas_val)
+    try :
+        df = parse_file_contents(content, filename, separator, nas_val)
+    except: return False
     if not df.empty: save_dataframe(session_id, df, type, filename)
     ex = dataframe_exists(session_id, type)
     if app.server.debug: print("load_and_save >", type, ">", session_id, ">", ex)
     return ex
+
+
+@app.callback(Output("offcanvas_dataset", "is_open"), Input("btn-dataset", "n_clicks"), Input("all_loaded", "data"), State("offcanvas_dataset", "is_open"))
+def toggle_offcanvas_dataset(click, all_loaded, is_open):
+    if all_loaded and is_open: return False
+    return click is not None
+
 
 # ==========================================
 
@@ -38,6 +47,7 @@ def show_selected_or_loaded_filenames(session_id, name_nodes, name_edges, _):
 @app.callback(
     Output("nodes_loaded", "data"),
     Output("edges_loaded", "data"),
+    Output("loading_datasets", "children"),
 
     Input("validate_datasets", "n_clicks_timestamp"),
 
@@ -49,7 +59,7 @@ def show_selected_or_loaded_filenames(session_id, name_nodes, name_edges, _):
 def import_datasets(_, upload_nodes_contents, upload_nodes_filename, upload_edges_contents, upload_edges_filename, separator, nas, session_id):
     nc = (False, load_and_save(session_id, "nodes", upload_nodes_contents, upload_nodes_filename, separator, nas))[upload_nodes_contents != None]
     ec = (False, load_and_save(session_id, "edges", upload_edges_contents, upload_edges_filename, separator, nas))[upload_edges_contents != None]
-    return (nc, ec)
+    return (nc, ec, html.Div())
 
 # ==========================================
 
@@ -60,10 +70,9 @@ def import_datasets(_, upload_nodes_contents, upload_nodes_filename, upload_edge
 
     Input("nodes_loaded", "data"),
     Input("edges_loaded", "data"),
-    State("validate_datasets", "n_clicks"),
-    State(store_id, "data")
+    State("validate_datasets", "n_clicks")
 )
-def nodes_or_edges_is_loaded(nodes_loaded, edges_loaded, clicked, session_id):
+def nodes_or_edges_is_loaded(nodes_loaded, edges_loaded, clicked):
     if not clicked: raise PreventUpdate
     anc = (no_update, ["Unable to load nodes, please check the format and separator."])[not nodes_loaded]
     aec = (no_update, ["Unable to load edges, please check the format and separator."])[not edges_loaded]

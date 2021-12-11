@@ -4,7 +4,7 @@ from layouts.components.dataset.import_callbacks import up_default
 
 layout = dbc.Offcanvas(
 
-    [
+    [   
         dbc.Alert([], id="alert_nodes", is_open=False, duration=5000, style={"position": "fixed", "top": 10, "left": 10, "zIndex": 9999}, color="danger", class_name="mx-auto text-center h2"),
         dbc.Alert([], id="alert_edges", is_open=False, duration=5000, style={"position": "fixed", "top": 10, "left": 10, "zIndex": 9999}, color="danger", class_name="mx-auto text-center h2"),
 
@@ -77,8 +77,14 @@ layout = dbc.Offcanvas(
         # ], id="div_columns", style={"display": "none"}),
 
         html.Center([
-            dbc.Button("Validate", id="validate_datasets", class_name="d-block mx-auto text-center", size="md"),
+            dbc.Button(
+                ["Validate"], 
+                id="validate_datasets", class_name="d-block mx-auto text-center"
+            ),
         ]),
+
+        html.Br(),
+        dbc.Spinner(id="loading_datasets", color="primary", size="lm"), 
 
         Store(data=False, id="nodes_loaded"),
         Store(data=False, id="edges_loaded"),

@@ -8,7 +8,7 @@ from callbacks import *
 
 # %% Setup the layouts
 from dash_bootstrap_components import Container
-from dash.dcc import Store
+from dash.dcc import Store, Loading
 from layouts import layout
 
 def serve_layout():
@@ -39,4 +39,4 @@ for f in networks: remove(f)
 
 app.layout = serve_layout
 app.title = "LDATA2010 - Graph visualisation"
-app.run_server(debug=False, dev_tools_hot_reload=False)
+app.run_server(host="0.0.0.0", debug=False, dev_tools_hot_reload=False)
