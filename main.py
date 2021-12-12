@@ -1,3 +1,4 @@
+from sys import argv
 from uuid import uuid4
 from glob import glob
 from os import remove
@@ -39,4 +40,5 @@ for f in networks: remove(f)
 
 app.layout = serve_layout
 app.title = "LDATA2010 - Graph visualisation"
-app.run_server(host="0.0.0.0", debug=False, dev_tools_hot_reload=False)
+debug = argv[1] if len(argv) > 1 else False
+app.run_server(host="0.0.0.0", debug=debug, dev_tools_hot_reload=False, dev_tools_ui=True)

@@ -12,7 +12,8 @@ def load_and_save(session_id, type, content, filename, separator, nas):
     nas_val = nas.split(",")
     if content is None : return False
     try :
-        df = parse_file_contents(content, filename, separator, nas_val)
+        df = parse_file_contents(content, filename, separator, nas_val) 
+        if not isinstance(df, DataFrame): raise Exception
     except: return False
     if not df.empty: save_dataframe(session_id, df, type, filename)
     ex = dataframe_exists(session_id, type)
@@ -64,8 +65,8 @@ def import_datasets(_, upload_nodes_contents, upload_nodes_filename, upload_edge
 # ==========================================
 
 @app.callback(
-    Output("alert_nodes", "children"), Output("alert_nodes", "is_open"),
-    Output("alert_edges", "children"), Output("alert_edges", "is_open"),
+    Output("alert_nodes", "is_open"),
+    Output("alert_edges", "is_open"),
     Output("all_loaded", "data"),
 
     Input("nodes_loaded", "data"),
@@ -74,8 +75,6 @@ def import_datasets(_, upload_nodes_contents, upload_nodes_filename, upload_edge
 )
 def nodes_or_edges_is_loaded(nodes_loaded, edges_loaded, clicked):
     if not clicked: raise PreventUpdate
-    anc = (no_update, ["Unable to load nodes, please check the format and separator."])[not nodes_loaded]
-    aec = (no_update, ["Unable to load edges, please check the format and separator."])[not edges_loaded]
-    return (anc, not nodes_loaded, aec, not edges_loaded, nodes_loaded and edges_loaded)
+    return (not nodes_loaded, not edges_loaded, nodes_loaded and edges_loaded)
 
 # ==========================================

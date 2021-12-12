@@ -13,3 +13,7 @@ html, body, #_dash-app-content{
 .accordion-body{
     padding: 0.5em !important;
 }
+
+#input_layout_selector .form-check{
+    width: 100%;
+}

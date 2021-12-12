@@ -4,7 +4,6 @@ def parse_file_contents(contents, filename, separator, nas):
     from io import StringIO
     _, content_string = contents.split(',')
     decoded = b64decode(content_string)
-    print(separator)
     if 'csv' in filename.lower():
         df = read_csv(StringIO(decoded.decode('utf-8')), sep=separator, na_values=nas)
     elif 'txt' in filename:
@@ -14,6 +13,22 @@ def parse_file_contents(contents, filename, separator, nas):
 
     df.columns = df.columns.str.strip("#").str.strip("@").str.upper().str.replace(" ", "_")
     return df
+
+
+def layout_value_to_function(value):
+    import networkx.drawing.layout as nxl
+    layouts = [
+        None,
+        nxl.circular_layout,
+        nxl.spiral_layout,
+        nxl.planar_layout,
+        nxl.fruchterman_reingold_layout,
+        nxl.kamada_kawai_layout
+    ]
+    for v,l in enumerate(layouts):
+        if v+1 == value: return l
+
+    return nxl.random_layout
 
 # def create_nodes(column_nodes_id, column_nodes_label, session_id):
 #     if not column_nodes_id or not column_nodes_label: raise PreventUpdate

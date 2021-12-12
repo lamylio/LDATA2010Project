@@ -5,8 +5,8 @@ from layouts.components.dataset.import_callbacks import up_default
 layout = dbc.Offcanvas(
 
     [   
-        dbc.Alert([], id="alert_nodes", is_open=False, duration=5000, style={"position": "fixed", "top": 10, "left": 10, "zIndex": 9999}, color="danger", class_name="mx-auto text-center h2"),
-        dbc.Alert([], id="alert_edges", is_open=False, duration=5000, style={"position": "fixed", "top": 10, "left": 10, "zIndex": 9999}, color="danger", class_name="mx-auto text-center h2"),
+        dbc.Alert(["Unable to load nodes", html.Br(), "please check the format and separator."], id="alert_nodes", is_open=False, duration=15000, color="danger", class_name="mx-auto text-center h2"),
+        dbc.Alert(["Unable to load edges", html.Br(), "please check the format and separator."], id="alert_edges", is_open=False, duration=15000, color="danger", class_name="mx-auto text-center h2"),
 
         html.Center([
             dbc.InputGroup([

@@ -4,38 +4,30 @@ from storage import *
 
 @app.callback(
     Output(store_settings, "data"),
+    inputs=dict(
+        session_id=State(store_id, "data"),
+        session_settings=Input(store_settings, "data"),
+        options=dict(
+            COL_NODES_ID=Input("select_column_nodes_id", "value"),
+            COL_NODES_LABEL=Input("select_column_nodes_label", "value"),
+            COL_NODES_SIZE=Input("select_column_nodes_size", "value"),
+            SHOW_NODES_LABELS=Input("show_nodes_label_switch", "value"),
+            GLOBAL_NODES_COLOR=Input("input_nodes_color", "value"),
+            
+            COL_EDGES_FROM=Input("select_column_edges_from", "value"),
+            COL_EDGES_TO=Input("select_column_edges_to", "value"),
 
-    State(store_id, "data"),
-    Input(store_settings, "data"),
-
-    Input("select_column_nodes_id", "value"),
-    Input("select_column_nodes_label", "value"),
-    Input("select_column_nodes_size", "value"),
-
-    Input("show_nodes_label_switch", "value"),
-
-    Input("select_column_edges_from", "value"),
-    Input("select_column_edges_to", "value"),
+            GRAPH_LAYOUT=Input("input_layout_selector", "value"),
+        )
+    )
 )
 def update_settings(
-    session_id, settings, 
-    column_nodes_id, column_nodes_label, column_nodes_size,
-    show_nodes_label,
-    column_edges_from, column_edges_to,
+    session_id, session_settings, options : dict
 ):
     if not graph_exists(session_id) and not settings_exists(session_id) : return {}
     if app.server.debug: print(session_id, "> update_settings")
-    params = settings or {}
-    params.update({
-        "COL_NODES_ID": column_nodes_id,
-        "COL_NODES_LABEL": column_nodes_label,
-        "COL_NODES_SIZE": column_nodes_size,
-
-        "SHOW_NODES_LABELS": bool(show_nodes_label),
-
-        "COL_EDGES_FROM": column_edges_from,
-        "COL_EDGES_TO": column_edges_to,
-    })
+    params = session_settings or {}
+    params.update(options)
     return params
 
 
