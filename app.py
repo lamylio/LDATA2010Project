@@ -3,7 +3,7 @@ from dash_bootstrap_components.themes import LITERA, BOOTSTRAP
 from flask_caching import Cache
 
 # %% Create the app
-app = Dash(__name__, external_stylesheets=[BOOTSTRAP, LITERA])
+app = Dash(__name__, external_stylesheets=[LITERA])
 cache = Cache(app.server, config={
     "CACHE_TYPE": 'filesystem',
     "CACHE_DIR": 'cache',

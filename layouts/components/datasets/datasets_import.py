@@ -1,6 +1,6 @@
 from requirements import dbc, html, dcc, Store
 
-from layouts.components.dataset.import_callbacks import up_default
+from callbacks.import_callbacks import up_default
 
 layout = dbc.Offcanvas(
 

@@ -17,3 +17,8 @@ html, body, #_dash-app-content{
 #input_layout_selector .form-check{
     width: 100%;
 }
+
+#config{
+    position: absolute;
+    top:0
+}

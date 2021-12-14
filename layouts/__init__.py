@@ -1,2 +1,2 @@
-import layouts.components as components
-from layouts.layout import layout as layout
+from .configurator import layout as configurator
+from .graph import layout as graph
