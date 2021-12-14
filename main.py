@@ -8,25 +8,28 @@ from app import *
 from callbacks import *
 
 # %% Setup the layouts
-from dash_bootstrap_components import Container
-from dash.dcc import Store, Loading
-from layouts import layout
+from requirements import dbc, dbc, Store
+from layouts import configurator, graph
+from layouts.components import datasets_import
 
 def serve_layout():
     session_id = str(uuid4())
-    return Container(
-    [
+    return dbc.Container([
         Store(data=session_id, id=store_id, storage_type="local"),
 
         Store(data={}, id=store_settings, storage_type="session"),
         Store(data={}, id=store_columns, storage_type="session"),
         Store(id=store_graph), 
-        layout
+        dbc.Row([
+            dbc.Col(configurator, width=3, xxl=2, style={"height": "100vh"}),
+            dbc.Col(graph, width=9, xxl=10, class_name="p-0", style={"height": "100vh"}),
+            datasets_import
+        ], class_name="w-100 h-100 g-0")
     ],
     fluid=True,
     class_name="h-100 w-100 p-0 m-0 g-0",
     style={"overflow": "hidden"}
-)
+    )
 
 # %% Run the server
 # In order to start the server, go to "Debugger" and/or click "Run"
