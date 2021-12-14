@@ -18,7 +18,7 @@ def parse_file_contents(contents, filename, separator, nas):
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl
     layouts = [
-        nxl.random_layout,
+        None,
         nxl.circular_layout,
         nxl.spiral_layout,
         nxl.planar_layout,

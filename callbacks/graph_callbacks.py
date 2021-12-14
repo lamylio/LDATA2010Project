@@ -229,3 +229,5 @@ def update_graph(session_id, settings):
     except Exception as e: 
         print(e)
         return dict(card_no_data=no_update, network=no_update, network_options=no_update, loading=html.Div(), alert=True)
+    
+
