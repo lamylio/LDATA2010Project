@@ -1,6 +1,12 @@
 from requirements import dbc, dcc
 
 layout = dbc.AccordionItem(title="Edges settings", children=[
+
+    dbc.InputGroup([
+        dbc.InputGroupText("ID"),
+        dbc.Select(id="select_column_edges_id", required=True, placeholder="Please import first"),
+    ], id="input_column_edges_id", class_name="p-0 my-1"),
+
     dbc.InputGroup([
         dbc.InputGroupText("FROM"),
         dbc.Select(id="select_column_edges_from", required=True, placeholder="Please import first"),
@@ -34,16 +40,17 @@ layout = dbc.AccordionItem(title="Edges settings", children=[
             style={"border": "none"}
         ),
         
-        # dbc.Select(
-        #     id="select_edges_color",
-        #     options=[
-        #         {"label": "Inherit", "value": "from"},
-        #         {"label": "Destination node", "value": "to"},
-        #         {"label": "Both nodes", "value": "both"}
-        #     ],
-        #     value="from",
-        #     class_name="",
-        # )
+        dbc.Select(
+            id="select_edges_color",
+            options=[
+                {"label": "Global", "value": False},
+                {"label": "Starting node", "value": "from"},
+                {"label": "Destination node", "value": "to"},
+                {"label": "Both nodes", "value": "both"}
+            ],
+            value=False,
+            class_name="",
+        )
     ]),
     
     dbc.Card(class_name="text-center p-1 my-2", outline=False, children=[

@@ -4,10 +4,11 @@ from storage import *
 
 import networkx as nx
 from utils import (
+    isolate_by_id,
     layout_value_to_function, 
     graph_alert_message, 
     populate_nodes, populate_edges,
-    constrasting_text, hex_to_rgba
+    isolate_by_from_to, hex_to_rgba
 )
 
 
@@ -45,9 +46,13 @@ def update_graph(session_id, settings):
         COL_NODES_LABEL = settings.get("COL_NODES_LABEL")
         COL_NODES_SIZE = settings.get("COL_NODES_SIZE")
         
+        COL_EDGES_ID = settings.get("COL_EDGES_ID")
         COL_EDGES_FROM = settings.get("COL_EDGES_FROM")
         COL_EDGES_TO = settings.get("COL_EDGES_TO")
         COL_EDGES_WEIGHT = settings.get("COL_EDGES_WEIGHT")
+
+        COL_FOCUS_ON = settings.get("COL_FOCUS_ON")
+        COL_FOCUS_VALUE = settings.get("COL_FOCUS_VALUE")
 
         # NODES CREATION
         if has_changed("COL_NODES_ID"):
@@ -57,12 +62,15 @@ def update_graph(session_id, settings):
                 graph.add_nodes_from(populate_nodes(df_nodes, COL_NODES_ID))
 
         # EDGES CREATION
-        if has_changed("COL_EDGES_FROM") or has_changed("COL_EDGES_TO") or has_changed("COL_NODES_ID"):
-            if not df_edges.empty and COL_EDGES_FROM != None and COL_EDGES_TO != None:
-                if app.server.debug: print(session_id, "> update_graph > update edges")
-                populated_edges = populate_edges(df_edges, COL_EDGES_FROM, COL_EDGES_TO, graph.nodes)
-                graph.remove_edges_from(dict(graph.edges))
-                graph.add_edges_from(populated_edges)
+
+        
+        if is_set("COL_EDGES_ID"):
+            if is_set("COL_EDGES_FROM") and is_set("COL_EDGES_TO"):
+                if not df_edges.empty and COL_EDGES_FROM != None and COL_EDGES_TO != None:
+                    if app.server.debug: print(session_id, "> update_graph > update edges")
+                    populated_edges = populate_edges(df_edges, COL_EDGES_FROM, COL_EDGES_TO, graph.nodes())
+                    graph.remove_edges_from(dict(graph.edges))
+                    graph.add_edges_from(populated_edges)
 
 
         # IF EMPTY STOP HERE
@@ -73,6 +81,7 @@ def update_graph(session_id, settings):
         )
         if app.server.debug: print(session_id, "> update_graph > graph is not empty")
                 
+        # DERIVATED DATAFRAMES
         if is_set("COL_NODES_LABEL"): 
             if app.server.debug: print(session_id, "> update_graph > obtain labels")
             df_nodes_label = df_nodes[[COL_NODES_ID, COL_NODES_LABEL]].groupby([COL_NODES_ID])
@@ -83,7 +92,11 @@ def update_graph(session_id, settings):
 
         if is_set("COL_EDGES_WEIGHT"):
             if app.server.debug: print(session_id, "> update_graph > obtain edges weights")
-            df_edges_weight = df_edges[[COL_EDGES_FROM, COL_EDGES_TO, COL_EDGES_WEIGHT]].groupby([COL_EDGES_FROM, COL_EDGES_TO])
+            df_edges_weight = df_edges[COL_EDGES_WEIGHT]
+
+        if is_set("COL_FOCUS_ON"):
+            df_focus = df_nodes[[COL_NODES_ID, COL_FOCUS_ON]].groupby([COL_NODES_ID])
+
 
         # LAYOUT
         if app.server.debug: print(session_id, "> update_graph > define layout")
@@ -102,18 +115,22 @@ def update_graph(session_id, settings):
             "x": pos[0]*scale, "y": pos[1]*scale,
             "value":  df_nodes_size.get_group(id).values[0][-1] or 5 if is_set("COL_NODES_SIZE") else 5,
             "size":  df_nodes_size.get_group(id).values[0][-1] or 5 if is_set("COL_NODES_SIZE") else 5,
+            "focus":  str(df_focus.get_group(id).values[0][-1]) if is_set("COL_FOCUS_ON") else None,
             "label": get_label(id)
         } for id, pos in layout.items()}
         
         if app.server.debug: print(session_id, "> update_graph > nx_edges")
         nx_edges = {
-            (efrom, eto): {
-                "value": df_edges_weight.get_group((efrom, eto)).values[0][-1] if is_set("COL_EDGES_WEIGHT") else 1,
-            } for efrom, eto in graph.edges()
+            (u, v): {
+                "value": df_edges_weight.loc[e_options["id"]] if is_set("COL_EDGES_WEIGHT") else 1,
+                **e_options
+            } for u, v, e_options in graph.edges(data=True) if u in nx_nodes.keys() and v in nx_nodes.keys()
         }
+
         if app.server.debug: print(session_id, "> update_graph > nx set attributes")
         nx.set_node_attributes(graph, nx_nodes)
         nx.set_edge_attributes(graph, nx_edges)
+
         
         # SAVE
         if app.server.debug: print(session_id, "> update_graph > save graph and settings")
@@ -130,12 +147,18 @@ def update_graph(session_id, settings):
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_edges")
         net_edges = [{
-            "id": f"{u}-{v}", 
             "from": u, 
             "to": v, 
             **e_options
         } for u, v, e_options in graph.edges(data=True, default={})]
         
+        # Keep only focus group
+        if is_set("COL_FOCUS_ON") and is_set("COL_FOCUS_VALUE"):
+            if app.server.debug: print(session_id, "> update_graph > to network > net_nodes > keep focus")
+            focus_nodes_id = [node.get("id") for node in net_nodes if node.get("focus") == COL_FOCUS_VALUE]
+            focus_nodes_neigh = {neigh_id for node_id in focus_nodes_id for neigh_id in graph.neighbors(node_id)}
+            net_nodes = [node for node in net_nodes if node.get("id") in focus_nodes_id or node.get("id") in focus_nodes_neigh]
+
         net_data = {
             "nodes": net_nodes,
             "edges": net_edges        
@@ -177,14 +200,30 @@ def update_graph(session_id, settings):
                 }
             },
             "arrowStrikethrough": False,
-            "color": settings.get('EDGES_COLOR', '#000000'),
-
+            "color": (
+                {
+                    "color": settings.get('EDGES_COLOR', '#000000'),
+                    "highlight": settings.get('EDGES_COLOR', '#000000'),
+                    "hover": settings.get('EDGES_COLOR', '#000000'),
+                    "opacity": int(settings.get('EDGES_OPACITY', 30)) / 100,
+                    "inherit": False
+                },
+                {
+                    "opacity": int(settings.get('EDGES_OPACITY', 30)) / 100,
+                    "inherit": settings.get("EDGES_COLOR_INHERIT", "false")
+                },
+            )[settings.get("EDGES_COLOR_INHERIT", "false") != "false"],
             "font": {
                 "size": 11
             },
             "scaling": {
                 "min": 1,
                 "max": 15,
+            },
+            "smooth": {
+                "type": "continuous",
+                "forceDirection": "none",
+                "roundness": 0.2
             }
         }
         
@@ -251,7 +290,8 @@ def get_selected_nodes(selection, data):
     if len(nodes) < 1: raise PreventUpdate
     node_id = nodes[0]
 
-    attrs = [n for n in data.get("nodes") if n["id"] == node_id][0].items()
+    attrs = [n for n in data.get("nodes") if n["id"] == node_id]
+    if len(attrs) < 1: raise PreventUpdate
     attrs_body = [[f"{k}: {v}", html.Br()] for k,v in attrs]
     attrs_body_joined = [child for list in attrs_body for child in list]
     return dict(title=node_id, body=attrs_body_joined)

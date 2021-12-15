@@ -1,3 +1,4 @@
+from pandas.core.frame import DataFrame
 from app import cache
 
 def hex_to_rgba(hex, opacity):
@@ -38,16 +39,25 @@ def populate_nodes(df, column):
 
 @cache.memoize()
 def populate_edges(df, col_from, col_to, nodes):
-    dfc = df[[col_from, col_to]].drop_duplicates()
-    edges_clean = [(fr, to) for fr, to in zip(
-        dfc[col_from],
-        dfc[col_to]
-    ) if fr in nodes and to in nodes]
-    return edges_clean
+    dfi = zip(
+        df[col_from],
+        df[col_to],
+        df.index
+    )
+    
+    return [
+        (f,t, {"id": i})
+        for f,t,i in dfi
+        if f in nodes and t in nodes
+    ]
 
 @cache.memoize()
 def isolate_by_id(df, column_id, column_to_isolate):
     return df[[column_id, column_to_isolate]].set_index(column_id)
+
+@cache.memoize()
+def isolate_by_from_to(df, column_from, column_to, column_to_isolate):
+    return df[[column_from, column_to, column_to_isolate]].set_index([column_from, column_to])
 
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl
