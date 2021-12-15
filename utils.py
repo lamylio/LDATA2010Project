@@ -1,3 +1,19 @@
+from app import cache
+
+def hex_to_rgba(hex, opacity):
+    hex = hex.lstrip("#")
+    rgb = tuple(int(hex[i:i+2], 16) for i in (0, 2, 4))
+    return f"rgba{(*rgb, opacity)}"
+
+def constrasting_text(str_rgba: str):
+    rgba = str_rgba.lstrip("rgba(").lstrip(")")
+    r,g,b,a = rgba.split(",")
+    red, green, blue = int(r), int(g), int(b)
+    if (red*0.299 + green*0.587 + blue*0.114) > 186: return "#000000" 
+    else: return "#ffffff"
+
+# import_callbacks.py
+
 def parse_file_contents(contents, filename, separator, nas):
     from pandas import read_csv, read_table
     from base64 import b64decode
@@ -14,41 +30,40 @@ def parse_file_contents(contents, filename, separator, nas):
     df.columns = df.columns.str.strip("#").str.strip("@").str.upper().str.replace(" ", "_")
     return df
 
+# graph_callbacks.py
+
+@cache.memoize()
+def populate_nodes(df, column):
+    return df[column].drop_duplicates().dropna()
+
+@cache.memoize()
+def populate_edges(df, col_from, col_to, nodes):
+    dfc = df[[col_from, col_to]].drop_duplicates()
+    edges_clean = [(fr, to) for fr, to in zip(
+        dfc[col_from],
+        dfc[col_to]
+    ) if fr in nodes and to in nodes]
+    return edges_clean
+
+@cache.memoize()
+def isolate_by_id(df, column_id, column_to_isolate):
+    return df[[column_id, column_to_isolate]].set_index(column_id)
 
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl
-    layouts = [
-        None,
-        nxl.circular_layout,
-        nxl.spiral_layout,
-        nxl.planar_layout,
-        nxl.fruchterman_reingold_layout,
-        nxl.kamada_kawai_layout
-    ]
-    for v,l in enumerate(layouts):
-        if v+1 == value: return l
+    layouts = {
+        1: nxl.random_layout,
+        2: nxl.circular_layout,
+        3: nxl.spiral_layout,
+        4: nxl.shell_layout,
+        5: nxl.spectral_layout,
+        6: nxl.kamada_kawai_layout
+    }
+    for k,v in layouts.items():
+        if k == value: return v
 
-    return nxl.random_layout
+    return nxl.kamada_kawai_layout
 
-# def create_nodes(column_nodes_id, column_nodes_label, session_id):
-#     if not column_nodes_id or not column_nodes_label: raise PreventUpdate
-#     df = DataFrame()
-#     while df.empty: df = get_dataframe(session_id, "nodes")
-#     df_unique = df[[column_nodes_id, column_nodes_label]].drop_duplicates(subset=[column_nodes_id])
-#     nodes = dict(id=df_unique[column_nodes_id], label=df_unique[column_nodes_label])
-#     # nodes = [{"id": id, "label": str(label)} for id, label in set(zip(df[column_nodes_id], df[column_nodes_label]))]
-#     return nodes
-
-
-# def create_edges(column_edges_from, column_edges_to,  session_id):
-#     if not column_edges_from or not column_edges_to: raise PreventUpdate
-#     df = DataFrame()
-#     while df.empty: df = get_dataframe(session_id, "edges")
-#     df_unique = df[[column_edges_from, column_edges_to]].drop_duplicates()
-#     # nodes = dict(
-#     #     id=[zip(df_unique[column_edges_from], df_unique[columns]], 
-#     #     from=df_unique[column_edges_from],
-#     #     to=
-#     # )
-#     edges = [{"id": f"{n_from}-{n_to}", "from": n_from, "to": n_to} for n_from, n_to in set(zip(df[column_edges_from], df[column_edges_to]))]
-#     return edges
+def graph_alert_message(message=""):
+    from dash.html import Br, B, I
+    return [B("Error while rendering the graph"), Br(), I(message), Br(), "Please check your options."]

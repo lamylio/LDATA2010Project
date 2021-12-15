@@ -12,12 +12,12 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
 
     dbc.InputGroup([
         dbc.InputGroupText("SIZE"),
-        dbc.Select(id="select_column_nodes_size", placeholder="Please import first")
+        dbc.Select(id="select_column_nodes_size", placeholder="Please import first", value="@NONE")
     ], id="input_column_nodes_size", class_name="p-0 my-1"),
     
     
-    dbc.Card(class_name="text-center p-1 my-2", outline=False, children=[
-        dbc.Label("Position"),
+    dbc.Card(class_name="text-center p-1 my-2 d-none", outline=False, children=[
+        dbc.Label("Position", class_name="bold"),
 
         dbc.Checklist(
             options=[
@@ -31,15 +31,16 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
     ]),
     
     dbc.Card(class_name="text-center p-1 my-2", outline=False, children=[
-        dbc.Label("Opacity"),
+        dbc.Label("Opacity", class_name="bold"),
         dcc.Slider(
-            min=1,
+            min=10,
             max=100,
             value=90,
+            step=10,
             tooltip={"placement": "bottom", "always_visible": True},
             id="input_nodes_opacity"
         ),
-        dbc.Label("Nodes color"),
+        dbc.Label("Nodes color", class_name="bold"),
         dbc.Input(
             type="color",
             id="input_nodes_color",
@@ -55,18 +56,19 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
                 dbc.Switch(
                     value=False,
                     id="show_nodes_label_switch",
-                    class_name="m-0 p-0 mr-4",
-                    input_class_name="m-0 p-0",
+                    class_name="mx-auto",
+                    input_class_name="p-0 mx-auto",
+                    label_class_name="p-0 mx-auto"
                 ),
             ]),
-            dbc.Col(children=[
+            dbc.Col(class_name="text-center", children=[
                 dbc.Label("Show selected"),
                 dbc.Switch(
                     value=False,
                     id="show_selected_node_switch",
-                    class_name="m-0 p-0 mr-4",
-                    input_class_name="m-0 p-0",
-                    label_class_name="m-0 p-0"
+                    class_name="mx-auto",
+                    input_class_name="p-0 mx-auto",
+                    label_class_name="p-0 mx-auto"
                 ),
             ]),
         ]),

@@ -1,29 +1,15 @@
-from networkx.classes.function import neighbors
 from app import * 
 from requirements import *
 from storage import *
 
 import networkx as nx
-from math import log2
+from utils import (
+    layout_value_to_function, 
+    graph_alert_message, 
+    populate_nodes, populate_edges,
+    constrasting_text, hex_to_rgba
+)
 
-from utils import layout_value_to_function
-
-@cache.memoize()
-def populate_nodes(df, column):
-    return df[column].drop_duplicates().dropna()
-
-@cache.memoize()
-def populate_edges(df, col_from, col_to, nodes):
-    dfc = df[[col_from, col_to]].drop_duplicates()
-    edges_clean = [(fr, to) for fr, to in zip(
-        dfc[col_from],
-        dfc[col_to]
-    ) if fr in nodes and to in nodes]
-    return edges_clean
-
-@cache.memoize()
-def isolate_by_id(df, column_id, column_to_isolate):
-    return df[[column_id, column_to_isolate]].set_index(column_id)
 
 @app.callback(
     dict(
@@ -32,13 +18,20 @@ def isolate_by_id(df, column_id, column_to_isolate):
         card_no_data=Output("card_no_data", "className"),
         loading=Output("loading_configurator", "children"),
         alert=Output("alert_configurator", "is_open"),
+        alert_message=Output("alert_configurator", "children")
     ),
     Input(store_id, "data"),
     Input(store_settings, "data"),
 )
 def update_graph(session_id, settings):
     if app.server.debug: print(session_id, "> update_graph > start")
-    if settings == None: return dict(card_no_data=no_update, network=no_update, network_options=no_update, loading=html.Div(), alert=no_update)
+    if settings == None: raise PreventUpdate
+
+    def has_changed(setting):
+        return session_settings.get(setting) != settings.get(setting)
+        
+    def is_set(setting):
+        return settings.get(setting, None) not in [None, "@NONE"]
 
     try:
         # RETRIEVE
@@ -55,12 +48,6 @@ def update_graph(session_id, settings):
         COL_EDGES_FROM = settings.get("COL_EDGES_FROM")
         COL_EDGES_TO = settings.get("COL_EDGES_TO")
         COL_EDGES_WEIGHT = settings.get("COL_EDGES_WEIGHT")
-                
-        def has_changed(setting):
-            return session_settings.get(setting) != settings.get(setting)
-        
-        def is_set(setting):
-            return settings.get(setting, None) != None
 
         # NODES CREATION
         if has_changed("COL_NODES_ID"):
@@ -79,16 +66,20 @@ def update_graph(session_id, settings):
 
 
         # IF EMPTY STOP HERE
-        if nx.number_of_nodes(graph) < 1: return dict(card_no_data="", network=no_update, network_options=no_update, loading=html.Div(), alert=False)
+        if nx.number_of_nodes(graph) < 1: return dict(
+            alert=graph_exists(session_id), alert_message=graph_alert_message("No nodes found.."),
+            network=no_update, network_options=no_update,
+            card_no_data=no_update, loading=html.Div() 
+        )
         if app.server.debug: print(session_id, "> update_graph > graph is not empty")
                 
         if is_set("COL_NODES_LABEL"): 
             if app.server.debug: print(session_id, "> update_graph > obtain labels")
-            df_labels = isolate_by_id(df_nodes, COL_NODES_ID, COL_NODES_LABEL)
+            df_nodes_label = df_nodes[[COL_NODES_ID, COL_NODES_LABEL]].groupby([COL_NODES_ID])
 
-        if settings.get("COL_NODES_SIZE") not in [None, "@NONE", "@NEIGHBORS"]: 
+        if is_set("COL_NODES_SIZE"): 
             if app.server.debug: print(session_id, "> update_graph > obtain nodes sizes")
-            df_nodes_size = isolate_by_id(df_nodes, COL_NODES_ID, COL_NODES_SIZE)   
+            df_nodes_size = df_nodes[[COL_NODES_ID, COL_NODES_SIZE]].groupby([COL_NODES_ID])
 
         if is_set("COL_EDGES_WEIGHT"):
             if app.server.debug: print(session_id, "> update_graph > obtain edges weights")
@@ -97,21 +88,27 @@ def update_graph(session_id, settings):
         # LAYOUT
         if app.server.debug: print(session_id, "> update_graph > define layout")
         layout_fn = layout_value_to_function(settings.get("GRAPH_LAYOUT"))
-        if layout_fn == None: return dict(card_no_data="d-none", network=no_update, network_options=no_update, loading=html.Div(), alert=True)
         layout = layout_fn(graph)
-        expansion = 1000
-        
+        scale=500
+
+        def get_label(id):
+            if settings.get("SHOW_NODES_LABELS", False) == False: return None
+            if is_set("COL_NODES_LABEL"): return df_nodes_label.get_group(id).values[0][-1]
+            return str(id)
+
         # SET GRAPH ATTRIBUTES
         if app.server.debug: print(session_id, "> update_graph > nx_nodes")
         nx_nodes = {id: {
-            "x": pos[0]*expansion, "y": pos[1]*expansion,
-            "value":  df_nodes_size.loc[id][0] if settings.get("COL_NODES_SIZE") not in [None, "@NONE", "@NEIGHBORS"] else None
+            "x": pos[0]*scale, "y": pos[1]*scale,
+            "value":  df_nodes_size.get_group(id).values[0][-1] or 5 if is_set("COL_NODES_SIZE") else 5,
+            "size":  df_nodes_size.get_group(id).values[0][-1] or 5 if is_set("COL_NODES_SIZE") else 5,
+            "label": get_label(id)
         } for id, pos in layout.items()}
         
         if app.server.debug: print(session_id, "> update_graph > nx_edges")
         nx_edges = {
             (efrom, eto): {
-                "value": df_edges_weight.get_group((efrom, eto))[COL_EDGES_WEIGHT][0] if is_set("COL_EDGES_WEIGHT") else None
+                "value": df_edges_weight.get_group((efrom, eto)).values[0][-1] if is_set("COL_EDGES_WEIGHT") else 1,
             } for efrom, eto in graph.edges()
         }
         if app.server.debug: print(session_id, "> update_graph > nx set attributes")
@@ -130,8 +127,6 @@ def update_graph(session_id, settings):
             "id": id, 
             **n_options
         } for id, n_options in graph.nodes(data=True, default={})]
-
-        net_nodes[0]["color"] = "#00ff00" # TEST
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_edges")
         net_edges = [{
@@ -148,15 +143,21 @@ def update_graph(session_id, settings):
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_options_nodes")
         net_options_nodes = {
-            "color": settings.get("NODES_COLOR", "#000000"),
-            "opacity": int(settings.get("NODES_OPACITY", 100))/100,
-            "fixed": {
-                "x": "x" in settings.get("FIXED_X_Y", []) or False,
-                "y": "y" in settings.get("FIXED_X_Y", []) or False
-            },
+            "color": hex_to_rgba(settings.get('NODES_COLOR', '#000000'), int(settings.get('NODES_OPACITY', 100))/100),
+            "fixed": False,
             "font": {
-                "size": 11
+                "color": "#000000", # constrasting_text(hex_to_rgba(settings.get('NODES_COLOR', '#000000'), int(settings.get('NODES_OPACITY', 100))/100))
             },
+            "shape": "dot",
+            "scaling": {
+                "min": 5,
+                "max": 15,
+                "label": {
+                    "enabled": True,
+                    "min": 5,
+                    "max": 15
+                }
+            }
         }
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_options_edges")
@@ -176,58 +177,81 @@ def update_graph(session_id, settings):
                 }
             },
             "arrowStrikethrough": False,
-            "color": {
-                "inherit": settings.get("EDGES_COLOR_INHERIT", True),
-                "opacity": settings.get("EDGES_COLOR_OPACITY", 1)
-            },
+            "color": settings.get('EDGES_COLOR', '#000000'),
+
             "font": {
                 "size": 11
             },
-            "smooth": False
+            "scaling": {
+                "min": 1,
+                "max": 15,
+            }
         }
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_options_interactions")
         net_options_interactions = {
             "keyboard": True,
-            "multiselect": True,
-            "navigationButtons": True,
-            "hideEdgesOnDrag": False,
-            "hideEdgesOnZoom": False,
-            "hideNodesOnDrag": False,
+            "multiselect": False,
+            "navigationButtons": True
         }
         
         if app.server.debug: print(session_id, "> update_graph > to network > net_options_physics")
         net_options_physics = {
-            "stabilization": {
-                "onlyDynamicEdges": True
-            }
+            "stabilization": False,
+            "timestep": 0,
+            "adaptiveTimestep": False
         }
         
+        if app.server.debug: print(session_id, "> update_graph > to network > net_options_manipulation")
         net_options_manipulation = {
-            "enabled": True,
-            "addNode": False,
-            "addEdge": False,
-            "controlNodeStyle": net_options_nodes
+            "enabled": True
         }
         
         net_options = {
             "height": "100%",
             "width":  "100%",
-            "nodes": net_options_nodes,
             "edges": net_options_edges,
-            "interactions": net_options_interactions,
-            "physics": net_options_physics,
-            "manipulation": net_options_manipulation
+            "nodes": net_options_nodes,
+            "interaction": net_options_interactions,
+            "manipulation": net_options_manipulation,
+            "physics": net_options_physics
         }
         
         if app.server.debug: print(session_id, "> update_graph > return graph")
-        return dict(card_no_data="d-none", network=net_data, network_options=net_options, loading=html.Div(), alert=False)
+        return dict(
+            alert=False, alert_message=no_update,
+            network=net_data, network_options=net_options,
+            card_no_data="d-none", loading=html.Div() 
+        )
     
         # NODES ATTRIBUTES ADJUSTMENTS
         # TODO ? 
         
     except Exception as e: 
         print(e)
-        return dict(card_no_data=no_update, network=no_update, network_options=no_update, loading=html.Div(), alert=True)
-    
+        return dict(
+            alert=True, alert_message=graph_alert_message(str(e.args)),
+            network=no_update, network_options=no_update,
+            card_no_data=no_update, loading=html.Div()
+        )    
 
+
+
+@app.callback(
+    dict(
+        title=Output("card_selected_node_header", "children"),
+        body=Output("card_selected_node_body", "children"),
+    ),
+    Input("network", "selection"),
+    Input("network", "data")
+)
+def get_selected_nodes(selection, data):
+    if not selection: raise PreventUpdate
+    nodes = selection.get("nodes", [])
+    if len(nodes) < 1: raise PreventUpdate
+    node_id = nodes[0]
+
+    attrs = [n for n in data.get("nodes") if n["id"] == node_id][0].items()
+    attrs_body = [[f"{k}: {v}", html.Br()] for k,v in attrs]
+    attrs_body_joined = [child for list in attrs_body for child in list]
+    return dict(title=node_id, body=attrs_body_joined)

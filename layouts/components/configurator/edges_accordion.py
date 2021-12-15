@@ -11,30 +11,43 @@ layout = dbc.AccordionItem(title="Edges settings", children=[
         dbc.Select(id="select_column_edges_to", required=True, placeholder="Please import first")
     ], class_name="w-100 my-1" ),
 
+    dbc.InputGroup([
+        dbc.InputGroupText("WEIGHT"),
+        dbc.Select(id="select_column_edges_weight", required=True, placeholder="Please import first")
+    ], class_name="w-100 mt-2 mb-1" ),
+
     dbc.Card(class_name="text-center p-1 my-2", outline=False, children=[
-        dbc.Label("Opacity"),
+        dbc.Label("Opacity", class_name="bold"),
         dcc.Slider(
             min=10,
             max=100,
-            value=90,
+            value=30,
+            step=10,
             tooltip={"placement": "bottom", "always_visible": True},
             id="input_edges_opacity"
         ),
-        dbc.Label("Edges color"),
-        dbc.Select(
-            id="select_edges_color",
-            options=[
-                {"label": "Inherit", "value": "from"},
-                {"label": "Destination node", "value": "to"},
-                {"label": "Both nodes", "value": "both"}
-            ],
-            value="from",
-            class_name="",
-        )
+        dbc.Label("Edges color", class_name="bold"),
+        dbc.Input(
+            type="color",
+            id="input_edges_color",
+            value="#000000",
+            style={"border": "none"}
+        ),
+        
+        # dbc.Select(
+        #     id="select_edges_color",
+        #     options=[
+        #         {"label": "Inherit", "value": "from"},
+        #         {"label": "Destination node", "value": "to"},
+        #         {"label": "Both nodes", "value": "both"}
+        #     ],
+        #     value="from",
+        #     class_name="",
+        # )
     ]),
     
     dbc.Card(class_name="text-center p-1 my-2", outline=False, children=[
-        dbc.Label("Arrows"),
+        dbc.Label("Arrows", class_name="bold"),
         dbc.Checklist(
             options=[
                 {"label": "From", "value": "from"},

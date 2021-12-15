@@ -19,7 +19,9 @@ from storage import *
             
             COL_EDGES_FROM=Input("select_column_edges_from", "value"),
             COL_EDGES_TO=Input("select_column_edges_to", "value"),
-            EDGES_COLOR_INHERIT=Input("select_edges_color", "value"),
+            COL_EDGES_WEIGHT=Input("select_column_edges_weight", "value"),
+            # EDGES_COLOR_INHERIT=Input("select_edges_color", "value"),
+            EDGES_COLOR=Input("input_edges_color", "value"),
             EDGES_OPACITY=Input("input_edges_opacity", "value"),
             EDGES_ARROWS=Input("input_edges_arrows", "value"),
 
@@ -34,6 +36,7 @@ def update_settings(
     if app.server.debug: print(session_id, "> update_settings")
     params = session_settings or {}
     params.update(options)
+    print(params)
     return params
 
 
@@ -63,6 +66,7 @@ def open_accordion_once_data_loaded(all_loaded):
 
     Output("select_column_edges_to", "options"),
     Output("select_column_edges_from", "options"),
+    Output("select_column_edges_weight", "options"),
 
     Output("select_column_nodes_id", "placeholder"),
     Output("select_column_nodes_label", "placeholder"),
@@ -70,6 +74,7 @@ def open_accordion_once_data_loaded(all_loaded):
 
     Output("select_column_edges_to", "placeholder"),
     Output("select_column_edges_from", "placeholder"),
+    Output("select_column_edges_weight", "placeholder"),
     State(store_id, "data"),
     Input("all_loaded", "data"),
 )
@@ -78,19 +83,25 @@ def update_selects_columns_inputs(session_id, _):
     if not dataframe_exists(session_id, "nodes") and not dataframe_exists(session_id, "edges") : raise PreventUpdate
     else: columns = {"nodes": get_dataframe(session_id, "nodes"), "edges": get_dataframe(session_id, "edges")}
 
-    placeholder = ["Please select"] * 5
+    placeholder = ["Please select"] * 6
 
     nodes = [{"label": col, "value": col} for col in columns.get("nodes").columns]
     edges =  [{"label": col, "value": col} for col in columns.get("edges").columns]
 
-    nodes_int = [{"label": col, "value": col} for col in columns.get("nodes").select_dtypes("int").columns]
-    nodes_neib = [{"label": "[BY NEIGHBORS]", "value": "@NEIGHBORS"}, {"label": "[NONE]", "value": "@NONE"}] + nodes_int
+    nodes_num_cols = list(columns.get("nodes").select_dtypes("int").columns) + list(columns.get("nodes").select_dtypes("float").columns)
+    nodes_str_cols = list(columns.get("nodes").select_dtypes("object").columns)
+    edges_num_cols = list(columns.get("edges").select_dtypes("int").columns) + list(columns.get("edges").select_dtypes("float").columns)
+
+    nodes_num = [{"label": col, "value": col} for col in nodes_num_cols] + [{"label": "[NONE]", "value": "@NONE"}]
+    nodes_str = [{"label": col, "value": col} for col in nodes_str_cols] + [{"label": "[ID]", "value": "@NONE"}]
+    edges_num = [{"label": col, "value": col} for col in edges_num_cols] + [{"label": "[NONE]", "value": "@NONE"}]
     return (
         nodes,
-        nodes,
-        nodes_neib,
+        nodes_str,
+        nodes_num,
         edges,
         edges,
+        edges_num,
         *placeholder)
     
     

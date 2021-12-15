@@ -1,9 +1,69 @@
+@font-face {
+    font-family: "Montserrat";
+    src: url("/assets/Montserrat-Regular.ttf");
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/assets/Montserrat-Medium.ttf");
+    font-weight: 500;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("/assets/Montserrat-SemiBold.ttf");
+    font-weight: 700;
+}
+
+* {
+    font-family: "Montserrat" !important;
+}
+
+.bold{
+    font-family: "Montserrat";
+    font-weight: 500;
+}
+
+.bolder{
+    font-family: "Montserrat";
+    font-weight: 700;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+    width: 4px;
+    height: 4px;
+}
+::-webkit-scrollbar-thumb{
+    background: #B3AFB3;
+    border-radius: 0px;
+}
+::-webkit-scrollbar-thumb:hover{
+    background: #525252;
+}
+::-webkit-scrollbar-track{
+    background: #F0F0F0;
+    border-radius: 0px;
+    box-shadow: inset 0px 0px 0px 0px #F0F0F0;
+}
+
+/* SMALL MODIFS */
+
 html, body, #_dash-app-content{
     height: 100vh;
     width: 100vw;
     margin: 0;
     padding: 0;
     overflow: hidden;
+}
+
+.accordion-header .accordion-button{
+    font-weight: 700;
+}
+
+.btn, .input-group-text{
+    font-weight: 500;
 }
 
 #configurator .btn-close{
@@ -14,8 +74,18 @@ html, body, #_dash-app-content{
     padding: 0.5em !important;
 }
 
+#accordion_columns{
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.card-body {
+    padding: 0.5rem;
+}
+
 #input_layout_selector .form-check{
     width: 100%;
+    padding: 0;
 }
 
 #config{

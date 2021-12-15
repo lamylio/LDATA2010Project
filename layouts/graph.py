@@ -1,24 +1,24 @@
-from dash.dependencies import Output, Input, State
-from dash.exceptions import PreventUpdate
-
-from dash import callback_context
 from requirements import html, dbc
-
 from visdcc import Network
+from utils import graph_alert_message
 
 layout = html.Div(
     [   
-        html.Div(id="card_no_data", className="d-none", children=[
+        html.Div(id="card_no_data", className="", children=[
             dbc.Card([
-                dbc.CardHeader(html.H3("No data available")),
+                dbc.CardHeader(html.H4("No data available"), class_name="mb-0 pb-0"),
                 dbc.CardBody([
-                    "There is no data available to display.", 
-                    html.Br(),
-                    "Please click on the data importation button first."])
+                    html.P([
+                        html.P("There is no data available to display..", className="bold"), 
+                        "Please import data by clicking on the \"Import\" button on the left.",
+                        html.Br(),
+                        "Then, select the ID column in nodes settings to start."
+                    ])
+                ])
             ], id="net_card", outline=True, class_name="w-50 mx-auto mt-5"),
         ]),
 
-        html.Div(id="card_selected", className="invisible", children=[
+        html.Div(id="card_selected", className="", children=[
             dbc.Card(class_name="position-absolute mx-3 mt-5", style={"right": "0px"},children=[
                 dbc.CardHeader(id="card_selected_node_header"),
                 dbc.CardBody(id="card_selected_node_body")
