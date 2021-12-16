@@ -28,7 +28,7 @@ layout = html.Div(
             dbc.Tab(id="tab_network", tab_id="network", label="Classic network", active_label_class_name="bold bg-primary text-light", style={"height": "100%", "width": "100%"}, children=[
                 Network(id="network", options={}, data={"nodes": [], "edges": []}, style={"height": "96vh", "width": "100%"})
             ]),
-            dbc.Tab(id="tab_matrix", tab_id="matrix", label="Adjacency matrix", active_label_class_name="bold bg-primary text-light", children=[
+            dbc.Tab(id="tab_matrix", tab_id="matrix", label="Adjacency matrix", active_label_class_name="bold bg-primary text-light", style={"height": "100%", "width": "100%"}, children=[
                 html.H3("Adjacency matrix to be displayed here")
             ])
         ]),

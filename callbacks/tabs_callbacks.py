@@ -1,5 +1,5 @@
 from app import app, store_id
-from storage import dataframe_exists
+from storage import dataframe_exists, get_graph, graph_exists
 from requirements import *
 from visdcc import Network
 
@@ -30,3 +30,23 @@ def draw_network_tab(active_tab, store_network, tabs_class):
     options = store_network.get("options")
 
     return Network(id="network", options=options, data=data, style={"height": "96vh", "width": "100%"})
+
+@app.callback(
+    Output("tab_matrix", "children"),
+    State(store_id, "data"),
+    State("tabs", "active_tab"),
+    State("tabs", "class_name"),
+    Input("store_network", "data"),
+)
+def draw_adjacency_tab(session_id, active_tab, tabs_class, store_network):
+    if not graph_exists(session_id): raise PreventUpdate()
+    if active_tab != "network": raise PreventUpdate()
+    if tabs_class == "d-none": raise PreventUpdate()
+    from plotly.express import imshow
+    from networkx import to_numpy_matrix 
+    graph = get_graph(session_id)
+    nodes = store_network.get("data").get("nodes")
+    labels = [node.get("label") for node in nodes]
+    heat = imshow(to_numpy_matrix(graph), x=labels, y=labels)
+    return dcc.Graph(id="heatmap", figure=heat)
+
