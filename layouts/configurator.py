@@ -9,7 +9,7 @@ layout = dbc.Card(id="configurator", outline=True, class_name="h-100 overflow-au
 
         dbc.CardBody(children=[
 
-            dbc.Button(html.H6("Data importation", className="m-0 p-1"), id="btn-dataset", color="dark", class_name="d-grid col-8 mx-auto mb-3 rounded-0", style={"opacity": 0.8}, outline=False),
+            dbc.Button(html.H6("IMPORT", className="m-0 p-1"), id="btn-dataset", color="dark", class_name="d-grid col-8 mx-auto mb-3 rounded-0", style={"opacity": 0.8}, outline=False),
             dbc.Alert([], id="alert_configurator", is_open=False, duration=15000, color="danger", class_name="mx-auto text-center h2"),
             
             dbc.Accordion(start_collapsed=True, flush=True, id="accordion_columns", children=[
@@ -19,9 +19,9 @@ layout = dbc.Card(id="configurator", outline=True, class_name="h-100 overflow-au
                 focus_accordion,
                 layout_accordion,
                 
-                dbc.AccordionItem(title="Metrics", item_id="accordion_metrics", children= [
-                    html.H6("To be done.. :(")
-                ])
+                # dbc.AccordionItem(title="Metrics", item_id="accordion_metrics", children= [
+                #     html.H6("To be done.. :(")
+                # ])
 
             ]),
 

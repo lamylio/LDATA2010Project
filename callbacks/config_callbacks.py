@@ -126,6 +126,7 @@ def update_selects_columns_inputs(session_id, _):
     Output("card_selected", "className"),
     State(store_id, "data"),
     Input("show_selected_node_switch", "value"),
+    # Input(store_settings, "value")
 )
 def show_card_of_selected_node(session_id, show_selected):
     if not show_selected: return "invisible"

@@ -1,6 +1,5 @@
-from requirements import html, dbc
+from requirements import html, dbc, Store
 from visdcc import Network
-from utils import graph_alert_message
 
 layout = html.Div(
     [   
@@ -19,12 +18,21 @@ layout = html.Div(
         ]),
 
         html.Div(id="card_selected", className="", style={"z-Index": 9999}, children=[
-            dbc.Card(class_name="position-absolute mx-3 mt-5", style={"right": "0px"},children=[
-                dbc.CardHeader(id="card_selected_node_header"),
+            dbc.Card(class_name="position-absolute mx-3 mt-5", style={"right": "0px"}, children=[
+                dbc.CardHeader(id="card_selected_node_header", class_name="bold"),
                 dbc.CardBody(id="card_selected_node_body")
             ])
         ]),
-        Network(id="network", options={"height": "100%", "width": "100%"}, data={"nodes": [], "edges": []}, style={"height": "100%", "width": "100%"})
+
+        dbc.Tabs(id="tabs", class_name="d-none", children=[
+            dbc.Tab(id="tab_network", tab_id="network", label="Classic network", active_label_class_name="bold bg-primary text-light", style={"height": "100%", "width": "100%"}, children=[
+                Network(id="network", options={}, data={"nodes": [], "edges": []}, style={"height": "96vh", "width": "100%"})
+            ]),
+            dbc.Tab(id="tab_matrix", tab_id="matrix", label="Adjacency matrix", active_label_class_name="bold bg-primary text-light", children=[
+                html.H3("Adjacency matrix to be displayed here")
+            ])
+        ]),
+        Store(id="store_network", storage_type="local")
     ],
     id="net",
     className="h-100"

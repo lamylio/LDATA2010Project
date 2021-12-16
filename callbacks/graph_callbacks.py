@@ -4,15 +4,13 @@ from requirements import *
 from storage import *
 from utils import *
 
-from .graph_net_options import get_all_options
+from .graph_callbacks_options import get_all_options
 import networkx as nx
 
 
 @app.callback(
     dict(
-        network=Output("network", "data"),
-        network_options=Output("network", "options"),
-        card_no_data=Output("card_no_data", "className"),
+        store_network=Output("store_network", "data"),
         loading=Output("loading_configurator", "children"),
         alert=Output("alert_configurator", "is_open"),
         alert_message=Output("alert_configurator", "children")
@@ -79,8 +77,8 @@ def update_graph(session_id, settings):
         # IF EMPTY STOP HERE
         if nx.number_of_nodes(graph) < 1: return dict(
             alert=graph_exists(session_id), alert_message=graph_alert_message("No nodes found.."),
-            network=no_update, network_options=no_update,
-            card_no_data=no_update, loading=html.Div() 
+            store_network=no_update,
+            loading=html.Div() 
         )
         if app.server.debug: print(session_id, "> update_graph > graph is not empty")
                 
@@ -191,16 +189,16 @@ def update_graph(session_id, settings):
         if app.server.debug: print(session_id, "> update_graph > return graph")
         return dict(
             alert=False, alert_message=no_update,
-            network=net_data, network_options=net_options,
-            card_no_data="d-none", loading=html.Div() 
+            store_network={"data": net_data, "options": net_options},
+            loading=html.Div() 
         )
 
     except Exception as e: 
         print(e)
         return dict(
             alert=True, alert_message=graph_alert_message(str(e.args[0])),
-            network=no_update, network_options=no_update,
-            card_no_data=no_update, loading=html.Div()
+            store_network=no_update,
+            loading=html.Div()
         )    
 
 
@@ -212,11 +210,10 @@ def update_graph(session_id, settings):
     ),
     State(store_id, "data"),
     Input("network", "selection"),
-    Input("network", "data")
+    Input("show_selected_node_switch", "value"),
 )
-def get_selected_nodes(session_id, selection, net_data):
-    if not graph_exists(session_id): raise PreventUpdate
-    if not selection: raise PreventUpdate
+def get_selected_nodes(session_id, selection, switch):
+    if not switch or not selection or not graph_exists(session_id): raise PreventUpdate
     nodes = selection.get("nodes", [])
     if len(nodes) < 1: raise PreventUpdate
     

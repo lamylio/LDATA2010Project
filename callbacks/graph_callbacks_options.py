@@ -87,14 +87,14 @@ def get_others(session_id, settings):
     
     if app.server.debug: print(session_id, "> update_graph > to network > net_options_physics")
     net_options_physics = {
-        "stabilization": False,
+        "stabilization": True,
         "timestep": 0,
         "adaptiveTimestep": False
     }
     
     if app.server.debug: print(session_id, "> update_graph > to network > net_options_manipulation")
     net_options_manipulation = {
-        "enabled": True
+        "enabled": False
     }
     
     return dict(interaction=net_options_interactions, manipulation=net_options_manipulation, physics=net_options_physics)

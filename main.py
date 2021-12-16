@@ -42,6 +42,5 @@ for f in cached: remove(f)
 for f in networks: remove(f)
 
 app.layout = serve_layout
-app.title = "LDATA2010 - Graph visualisation"
 debug = argv[1] if len(argv) > 1 else False
 app.run_server(host="0.0.0.0", debug=debug, dev_tools_hot_reload=False, dev_tools_ui=True)
