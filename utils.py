@@ -33,6 +33,12 @@ def parse_file_contents(contents, filename, separator, nas):
 
 # graph_callbacks.py
 
+def get_value_matching_index(df, index_value, default=None):
+    try:
+        return df.loc[index_value]
+    except Exception:
+        return default
+
 @cache.memoize()
 def populate_nodes(df, column):
     return df[column].drop_duplicates().dropna()
@@ -62,18 +68,18 @@ def isolate_by_from_to(df, column_from, column_to, column_to_isolate):
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl
     layouts = {
-        1: nxl.random_layout,
-        2: nxl.circular_layout,
-        3: nxl.spiral_layout,
-        4: nxl.shell_layout,
-        5: nxl.spectral_layout,
-        6: nxl.kamada_kawai_layout
+        1: (nxl.spring_layout, {"scale": 500}),
+        2: (nxl.circular_layout, {"scale": 500}),
+        3: (nxl.spiral_layout, {"scale": 500}),
+        4: (nxl.shell_layout, {"scale": 500}),
+        5: (nxl.spectral_layout, {"scale": 1000}),
+        6: (nxl.kamada_kawai_layout, {"scale": 500})
     }
     for k,v in layouts.items():
         if k == value: return v
 
-    return nxl.kamada_kawai_layout
+    return layouts.get(6)
 
 def graph_alert_message(message=""):
     from dash.html import Br, B, I
-    return [B("Error while rendering the graph"), Br(), I(message), Br(), "Please check your options."]
+    return [B("Error while rendering the graph"), Br(), "Please check your options.", Br(), Br(), I(message)]

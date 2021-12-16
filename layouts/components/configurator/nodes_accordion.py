@@ -12,7 +12,7 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
 
     dbc.InputGroup([
         dbc.InputGroupText("SIZE"),
-        dbc.Select(id="select_column_nodes_size", placeholder="Please import first", value="@NONE")
+        dbc.Select(id="select_column_nodes_size", placeholder="Please import first")
     ], id="input_column_nodes_size", class_name="p-0 my-1"),
     
     
@@ -54,7 +54,7 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
             dbc.Col([
                 dbc.Label("Show labels"),
                 dbc.Switch(
-                    value=False,
+                    value=True,
                     id="show_nodes_label_switch",
                     class_name="mx-auto",
                     input_class_name="p-0 mx-auto",

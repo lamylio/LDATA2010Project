@@ -115,7 +115,7 @@ def update_selects_columns_inputs(session_id, _):
         edges,
         edges,
         edges,
-        edges_num,
+        edges,
         nodes,
 
         *placeholder)
