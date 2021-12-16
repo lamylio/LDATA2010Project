@@ -16,8 +16,8 @@ layout = dbc.Card(id="configurator", outline=True, class_name="h-100 overflow-au
 
                 nodes_accordion,
                 edges_accordion,
-                layout_accordion,
                 focus_accordion,
+                layout_accordion,
                 
                 dbc.AccordionItem(title="Metrics", item_id="accordion_metrics", children= [
                     html.H6("To be done.. :(")

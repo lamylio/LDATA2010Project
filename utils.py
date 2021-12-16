@@ -39,11 +39,9 @@ def get_value_matching_index(df, index_value, default=None):
     except Exception:
         return default
 
-@cache.memoize()
 def populate_nodes(df, column):
     return df[column].drop_duplicates().dropna()
 
-@cache.memoize()
 def populate_edges(df, col_from, col_to, nodes):
     dfi = zip(
         df[col_from],
@@ -57,13 +55,11 @@ def populate_edges(df, col_from, col_to, nodes):
         if f in nodes and t in nodes
     ]
 
-@cache.memoize()
-def isolate_by_id(df, column_id, column_to_isolate):
-    return df[[column_id, column_to_isolate]].set_index(column_id)
+# def isolate_by_id(df, column_id, column_to_isolate):
+#     return df[[column_id, column_to_isolate]].set_index(column_id)
 
-@cache.memoize()
-def isolate_by_from_to(df, column_from, column_to, column_to_isolate):
-    return df[[column_from, column_to, column_to_isolate]].set_index([column_from, column_to])
+# def isolate_by_from_to(df, column_from, column_to, column_to_isolate):
+#     return df[[column_from, column_to, column_to_isolate]].set_index([column_from, column_to])
 
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl

@@ -18,7 +18,7 @@ layout = html.Div(
             ], id="net_card", outline=True, class_name="w-50 mx-auto mt-5"),
         ]),
 
-        html.Div(id="card_selected", className="", children=[
+        html.Div(id="card_selected", className="", style={"z-Index": 9999}, children=[
             dbc.Card(class_name="position-absolute mx-3 mt-5", style={"right": "0px"},children=[
                 dbc.CardHeader(id="card_selected_node_header"),
                 dbc.CardBody(id="card_selected_node_body")

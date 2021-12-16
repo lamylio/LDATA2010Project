@@ -68,8 +68,7 @@ def get_nodes_edges_groups(session_id, settings):
             "type": "continuous",
             "forceDirection": "none",
             "roundness": 0.1
-        },
-        "size": 3
+        }
     }
 
     net_options_groups = {
@@ -98,4 +97,4 @@ def get_others(session_id, settings):
         "enabled": True
     }
     
-    return dict(interactions=net_options_interactions, manipulation=net_options_manipulation, physics=net_options_physics)
+    return dict(interaction=net_options_interactions, manipulation=net_options_manipulation, physics=net_options_physics)

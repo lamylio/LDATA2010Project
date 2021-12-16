@@ -1,3 +1,4 @@
+from networkx.algorithms.centrality.betweenness import betweenness_centrality
 from app import * 
 from requirements import *
 from storage import *
@@ -209,17 +210,39 @@ def update_graph(session_id, settings):
         title=Output("card_selected_node_header", "children"),
         body=Output("card_selected_node_body", "children"),
     ),
+    State(store_id, "data"),
     Input("network", "selection"),
     Input("network", "data")
 )
-def get_selected_nodes(selection, data):
+def get_selected_nodes(session_id, selection, net_data):
+    if not graph_exists(session_id): raise PreventUpdate
     if not selection: raise PreventUpdate
     nodes = selection.get("nodes", [])
     if len(nodes) < 1: raise PreventUpdate
+    
     node_id = nodes[0]
+    graph = get_graph(session_id)
+    nx_node = graph.nodes.get(node_id)
+    node_label = nx_node.get("label")
 
-    attrs = [n for n in data.get("nodes") if n["id"] == node_id]
-    if len(attrs) < 1: raise PreventUpdate
-    attrs_body = [[f"{k}: {v}", html.Br()] for k,v in attrs[0].items()]
-    attrs_body_joined = [child for list in attrs_body for child in list]
-    return dict(title=node_id, body=attrs_body_joined)
+    # Title 
+    title = f"{node_label} ({node_id})"
+    
+    # Body
+
+    graph_betweenness_centrality = nx.betweenness_centrality(graph)
+    node_clustering_coeff = nx.clustering(graph, node_id)
+    infos = {
+        "Size": nx_node.get("value"),
+        "Group": nx_node.get("group")
+    }
+
+    metrics = {
+        "Degree": round(graph.degree[node_id], 2),
+        "Betweness centrality": round(graph_betweenness_centrality.get(node_id),2),
+        "Clustering coeff": round(node_clustering_coeff,2),
+
+    }
+
+    body = [html.P(f"{k}: {v}") for k,v in infos.items()] + [html.Hr()] + [html.P(f"{k}: {v}")for k,v in metrics.items()]
+    return dict(title=title, body=body)
