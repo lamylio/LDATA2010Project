@@ -275,7 +275,7 @@ def get_selected_nodes(session_id, selection):
 
     metrics = {
         "Degree": round(graph.degree[node_id], 2),
-        "Betweness centrality": round(graph_betweenness_centrality.get(node_id),2),
+        "Betweenness centrality": round(graph_betweenness_centrality.get(node_id),2),
         "Clustering coeff": round(node_clustering_coeff,2),
     }
 
