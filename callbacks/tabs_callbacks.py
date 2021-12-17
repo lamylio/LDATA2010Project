@@ -1,5 +1,6 @@
+from pkgutil import get_data
 from app import app, store_id, store_settings, store_graph
-from storage import dataframe_exists, get_graph, graph_exists
+from storage import dataframe_exists, get_dataframe, get_graph, graph_exists
 from requirements import *
 from visdcc import Network
 
@@ -81,5 +82,29 @@ def draw_hist_one(session_id, active_tab, tabs_class, store_graph, _):
     heat = bar(x=deg, y=cnt, labels={"x": "Degree", "y": "Nodes count"})
     return dcc.Graph(id="fig_degree_bar", figure=heat)
 
+@app.callback(
+    Output("df_nodes", "columns"),
+    Output("df_nodes", "data"),
+    Input(store_id, "data"),
+    Input("all_loaded", "data")
+)
+def datatable_nodes(session_id, _):
+    if not dataframe_exists(session_id, "nodes"): raise PreventUpdate()
+    df = get_dataframe(session_id, "nodes")
+    columns = [{"name": c, "id": c, 'deletable': True} for c in df.columns]
+    data = df.to_dict("records")
+    return columns, data
 
+@app.callback(
+    Output("df_edges", "columns"),
+    Output("df_edges", "data"),
+    Input(store_id, "data"),
+    Input("all_loaded", "data")
+)
+def datatable_edges(session_id, _):
+    if not dataframe_exists(session_id, "edges"): raise PreventUpdate()
+    df = get_dataframe(session_id, "edges")
+    columns = [{"name": c, "id": c, 'deletable': True} for c in df.columns]
+    data = df.to_dict("records")
+    return columns, data
 

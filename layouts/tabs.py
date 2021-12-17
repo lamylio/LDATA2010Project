@@ -1,5 +1,6 @@
 from requirements import html, dbc
 from visdcc import Network
+from dash.dash_table import DataTable
 
 layout = html.Div(
     [   
@@ -52,6 +53,15 @@ layout = html.Div(
                     ], id="hist_4"),
                 ]),
             ]),
+
+            dbc.Tab(id="tab_nodes", tab_id="dataframe_nodes", label="Dataframe nodes", active_label_class_name="bold bg-primary text-light", style={"height": "90vh", "width": "100%", "overflow": "auto"}, children=[
+                DataTable(id="df_nodes", page_size=25, fixed_rows={'headers': True},  style_as_list_view=True, editable=True)
+            ]),
+
+            dbc.Tab(id="tab_edges", tab_id="dataframe_edges", label="Dataframe nodes", active_label_class_name="bold bg-primary text-light", style={"height": "90vh", "width": "100%"}, children=[
+                DataTable(id="df_edges", page_size=25, fixed_rows={'headers': True},  style_as_list_view=True, editable=True)
+            ])
+
         ]),
     ],
     id="net",
