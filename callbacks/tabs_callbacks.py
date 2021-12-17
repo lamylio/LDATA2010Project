@@ -1,4 +1,4 @@
-from app import app, store_id
+from app import app, store_id, store_settings, store_graph
 from storage import dataframe_exists, get_graph, graph_exists
 from requirements import *
 from visdcc import Network
@@ -18,35 +18,68 @@ def show_tabs(session_id, _):
 
 @app.callback(
     Output("tab_network", "children"),
-    State("tabs", "active_tab"),
-    Input("store_network", "data"),
+    # Output("network", "data"),
+    # Output("network", "options"),
+    Input(store_graph, "data"),
+    Input("tabs", "active_tab"),
     State("tabs", "class_name")
 )
-def draw_network_tab(active_tab, store_network, tabs_class):
-    if not store_network: raise PreventUpdate()
-    if active_tab != "network": raise PreventUpdate()
+def draw_network_tab(store_graph, active_tab, tabs_class):
+    if not store_graph: raise PreventUpdate()
     if tabs_class == "d-none": raise PreventUpdate()
-    data = store_network.get("data")
-    options = store_network.get("options")
-
-    return Network(id="network", options=options, data=data, style={"height": "96vh", "width": "100%"})
+    if active_tab != "network": raise PreventUpdate()
+    data = store_graph.get("data")
+    options = store_graph.get("options")
+    # return data, options
+    return (
+        Network(id="network", options=options, data=data, moveTo={"position": {"x": 0, "y": 0, "scale": 0.5}}, style={"height": "96vh", "width": "100%"}),
+    )
 
 @app.callback(
     Output("tab_matrix", "children"),
+    Output("loading_adjacency", "children"),
     State(store_id, "data"),
-    State("tabs", "active_tab"),
+    Input("tabs", "active_tab"),
     State("tabs", "class_name"),
-    Input("store_network", "data"),
+    Input(store_graph, "data"),
+    Input(store_settings, "data"),
 )
-def draw_adjacency_tab(session_id, active_tab, tabs_class, store_network):
-    if not graph_exists(session_id): raise PreventUpdate()
-    if active_tab != "network": raise PreventUpdate()
-    if tabs_class == "d-none": raise PreventUpdate()
+def draw_adjacency_tab(session_id, active_tab, tabs_class, store_graph, _):
+    if not graph_exists(session_id): raise PreventUpdate
+    if active_tab != "matrix": raise PreventUpdate
+    if tabs_class == "d-none": raise PreventUpdate
     from plotly.express import imshow
     from networkx import to_numpy_matrix 
     graph = get_graph(session_id)
-    nodes = store_network.get("data").get("nodes")
-    labels = [node.get("label") for node in nodes]
-    heat = imshow(to_numpy_matrix(graph), x=labels, y=labels)
-    return dcc.Graph(id="heatmap", figure=heat)
+    nodes = store_graph.get("data").get("nodes")
+    labels = [node.get("label") or node.get("id") for node in nodes]
+    heat = imshow(to_numpy_matrix(graph), x=labels, y=labels, color_continuous_scale="blues",zmin=0, zmax=1, labels={"x": "Nodes", "y": "Nodes", "color": "Neighbours = 1"})
+    return [
+        dbc.Spinner(html.Div(), id="loading_adjacency", color="primary", size="lm", show_initially=False), 
+        dcc.Graph(id="fig_heatmap", figure=heat, className="d-flex mx-auto text-center", responsive=True, config={"fillFrame": True})
+    ], html.Div()
+
+
+@app.callback(
+    Output("hist_1", "children"),
+    State(store_id, "data"),
+    Input("tabs", "active_tab"),
+    State("tabs", "class_name"),
+    Input(store_graph, "data"),
+    Input(store_settings, "data"),
+)
+def draw_hist_one(session_id, active_tab, tabs_class, store_graph, _):
+    if not graph_exists(session_id): raise PreventUpdate()
+    if active_tab != "matrix": raise PreventUpdate()
+    if tabs_class == "d-none": raise PreventUpdate()
+    from plotly.express import bar
+    from collections import Counter
+    graph = get_graph(session_id)
+    degree_seq = sorted([d for _, d in graph.degree()], reverse=True) 
+    degreeCount = Counter(degree_seq)
+    deg, cnt = zip(*degreeCount.items())
+    heat = bar(x=deg, y=cnt, labels={"x": "Degree", "y": "Nodes count"})
+    return dcc.Graph(id="fig_degree_bar", figure=heat)
+
+
 

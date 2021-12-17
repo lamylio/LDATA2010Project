@@ -16,7 +16,8 @@ def get_nodes_edges_groups(session_id, settings):
         "color": hex_to_rgba(settings.get('NODES_COLOR', '#000000'), int(settings.get('NODES_OPACITY', 100))/100),
         "font": {
             "color": "#000000", # constrasting_text(hex_to_rgba(settings.get('NODES_COLOR', '#000000'), int(settings.get('NODES_OPACITY', 100))/100))
-            "vadjust": -5
+            "vadjust": -5,
+            "size": (0,11)[settings.get("SHOW_NODES_LABELS", False)]
         },
         "shape": "dot",
         "scaling": {
@@ -29,6 +30,8 @@ def get_nodes_edges_groups(session_id, settings):
             }
         }
     }
+
+    print(net_options_nodes)
     
     if app.server.debug: print(session_id, "> update_graph > to network > net_options_edges")
     net_options_edges = {
@@ -67,22 +70,28 @@ def get_nodes_edges_groups(session_id, settings):
         "smooth": {
             "type": "continuous",
             "forceDirection": "none",
-            "roundness": 0.1
+            "roundness": 0.05
         }
     }
 
     net_options_groups = {
         "@NOT_FOCUS": net_options_nodes,
+        # "@PATH": {
+        #     "shape": "star"
+        # }
     }
 
     return dict(nodes=net_options_nodes, edges=net_options_edges, groups=net_options_groups)
 
 def get_others(session_id, settings):
     if app.server.debug: print(session_id, "> update_graph > to network > net_options_interactions")
-    net_options_interactions = {
+    net_options_interaction = {
         "keyboard": True,
-        "multiselect": False,
-        "navigationButtons": False
+        "multiselect": True,
+        "navigationButtons": True,
+        "tooltipDelay": 100,
+        "hover": True,
+        "hoverConnectedEdges": False,
     }
     
     if app.server.debug: print(session_id, "> update_graph > to network > net_options_physics")
@@ -97,4 +106,8 @@ def get_others(session_id, settings):
         "enabled": False
     }
     
-    return dict(interaction=net_options_interactions, manipulation=net_options_manipulation, physics=net_options_physics)
+    net_options_layout = {
+        "improvedLayout": False
+    }
+    
+    return dict(interaction=net_options_interaction, manipulation=net_options_manipulation, physics=net_options_physics, layout=net_options_layout)

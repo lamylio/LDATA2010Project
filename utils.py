@@ -29,6 +29,7 @@ def parse_file_contents(contents, filename, separator, nas):
         return None
 
     df.columns = df.columns.str.strip("#").str.strip("@").str.upper().str.replace(" ", "_")
+    df = df.infer_objects()
     return df
 
 # graph_callbacks.py
@@ -64,12 +65,12 @@ def populate_edges(df, col_from, col_to, nodes):
 def layout_value_to_function(value):
     import networkx.drawing.layout as nxl
     layouts = {
-        1: (nxl.spring_layout, {"scale": 500}),
+        1: (nxl.spring_layout, {"scale": 600}),
         2: (nxl.circular_layout, {"scale": 500}),
         3: (nxl.spiral_layout, {"scale": 500}),
         4: (nxl.shell_layout, {"scale": 500}),
         5: (nxl.spectral_layout, {"scale": 1000}),
-        6: (nxl.kamada_kawai_layout, {"scale": 500})
+        6: (nxl.kamada_kawai_layout, {"scale": 600})
     }
     for k,v in layouts.items():
         if k == value: return v

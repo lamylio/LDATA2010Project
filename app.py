@@ -15,7 +15,7 @@ server = app.server
 store_id = "session_id"
 store_columns = "datasets_columns"
 store_settings = "visual_settings"
-store_graph = "store_local_graph"
+store_graph = "store_network"
 
 alert = "alert"
 

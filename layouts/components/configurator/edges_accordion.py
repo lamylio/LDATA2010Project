@@ -27,7 +27,7 @@ layout = dbc.AccordionItem(title="Edges settings", children=[
         dcc.Slider(
             min=10,
             max=100,
-            value=30,
+            value=90,
             step=10,
             tooltip={"placement": "bottom", "always_visible": True},
             id="input_edges_opacity"

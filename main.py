@@ -9,7 +9,7 @@ from callbacks import *
 
 # %% Setup the layouts
 from requirements import dbc, dbc, Store
-from layouts import configurator, graph
+from layouts import configurator, tabs
 from layouts.components import datasets_import
 
 def serve_layout():
@@ -17,12 +17,12 @@ def serve_layout():
     return dbc.Container([
         Store(data=session_id, id=store_id, storage_type="local"),
 
-        Store(data={}, id=store_settings, storage_type="session"),
-        Store(data={}, id=store_columns, storage_type="session"),
-        Store(id=store_graph), 
+        Store(data={}, id=store_settings, storage_type="memory"), # Maybe local in future
+        Store(data={}, id=store_columns, storage_type="memory"), # Maybe local in future
+        Store(data={}, id=store_graph, storage_type="memory"),
         dbc.Row([
             dbc.Col(configurator, width=3, xxl=2, style={"height": "100vh"}),
-            dbc.Col(graph, width=9, xxl=10, class_name="p-0", style={"height": "100vh"}),
+            dbc.Col(tabs, width=9, xxl=10, class_name="p-0", style={"height": "100vh"}),
             datasets_import
         ], class_name="w-100 h-100 g-0")
     ],

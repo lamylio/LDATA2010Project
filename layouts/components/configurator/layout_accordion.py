@@ -10,14 +10,14 @@ layout = dbc.AccordionItem(title="Layouts", item_id="accordion_layouts", childre
             labelCheckedClassName="active",
             
             options=[
-                {"label": "Kamada-Kawai", "value": 6},
-                {"label": "Circular", "value": 2},
-                {"label": "Spiral", "value": 3},
-                {"label": "Spring", "value": 1},
                 {"label": "Shell (fruchterman)", "value": 4},
+                {"label": "Kamada-Kawai", "value": 6},
+                {"label": "Spring", "value": 1},
+                {"label": "Spiral", "value": 3},
+                # {"label": "Circular", "value": 2},
                 # {"label": "Spectral (Laplacian)", "value": 5},
             ],
-            value=2                      
+            value=4                  
         ),
     ])
     

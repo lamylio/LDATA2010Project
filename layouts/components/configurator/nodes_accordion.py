@@ -49,29 +49,29 @@ layout = dbc.AccordionItem(title="Nodes settings", item_id="accordion_nodes", st
         ),
     ]),
     
-    dbc.Card([
-        dbc.Row(class_name="text-center mt-2",children=[
-            dbc.Col([
-                dbc.Label("Show labels"),
-                dbc.Switch(
-                    value=True,
-                    id="show_nodes_label_switch",
-                    class_name="mx-auto",
-                    input_class_name="p-0 mx-auto",
-                    label_class_name="p-0 mx-auto"
-                ),
-            ]),
-            dbc.Col(class_name="text-center", children=[
-                dbc.Label("Show selected"),
-                dbc.Switch(
-                    value=False,
-                    id="show_selected_node_switch",
-                    class_name="mx-auto",
-                    input_class_name="p-0 mx-auto",
-                    label_class_name="p-0 mx-auto"
-                ),
-            ]),
-        ]),
-    ])
+    # dbc.Card([
+    #     dbc.Row(class_name="text-center mt-2",children=[
+    #         dbc.Col([
+    #             dbc.Label("Show labels"),
+    #             dbc.Switch(
+    #                 value=True,
+    #                 id="show_nodes_label_switch",
+    #                 class_name="mx-auto",
+    #                 input_class_name="p-0 mx-auto",
+    #                 label_class_name="p-0 mx-auto"
+    #             ),
+    #         ]),
+    #         dbc.Col(class_name="text-center", children=[
+    #             dbc.Label("Show selected"),
+    #             dbc.Switch(
+    #                 value=False,
+    #                 id="show_selected_node_switch",
+    #                 class_name="mx-auto",
+    #                 input_class_name="p-0 mx-auto",
+    #                 label_class_name="p-0 mx-auto"
+    #             ),
+    #         ]),
+    #     ]),
+    # ])
     
 ])
